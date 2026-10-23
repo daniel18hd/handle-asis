@@ -59,6 +59,6 @@
     ['Allianz','#1d4ed8',2,0],['Zurich','#2563eb',1,0],['Inbursa','#0f172a',1,0],['AXA Seguros','#1e3a8a',2,2],
     ['Afirme Seguros','#16a34a',1,0],['Sancor Seguros','#65a30d',1,0],['Qualitas Salud','#7c3aed',2,2],['Plan Seguro','#db2777',3,0]
   ];
-  D.cred = [['AXA Seguros','AXA Seguros (SOR verified 2026-07-02)'],['AXA Seguros','AXA Seguros - 12131'],['Seguros Banorte','Seguros Banorte - 3477'],['Seguros Banorte','Seguros Banorte - 18266'],['Chubb Seguros','Chubb Seguros - ALVAREZ91378'],['Chubb Seguros','Chubb Seguros - 97557'],['HDI Seguros','HDI Seguros - 115135'],['Chubb Seguros','Chubb Seguros - 97542'],['Qualitas Salud','Qualitas Salud - 11'],['Qualitas Salud','Qualitas Salud - test']];
+  D.cred = [['AXA Seguros','AXA Seguros (SOR verified 2026-07-02)'],['AXA Seguros','AXA Seguros - 40218'],['Seguros Banorte','Seguros Banorte - 5512'],['Seguros Banorte','Seguros Banorte - 20934'],['Chubb Seguros','Chubb Seguros - AGENTE01'],['Chubb Seguros','Chubb Seguros - 88310'],['HDI Seguros','HDI Seguros - 300471'],['Chubb Seguros','Chubb Seguros - 88327'],['Qualitas Salud','Qualitas Salud - 02'],['Qualitas Salud','Qualitas Salud - test']];
   window.D = D;
 })();
