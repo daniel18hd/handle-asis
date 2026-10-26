@@ -80,7 +80,7 @@ function osView(sec){
   if(sec==='resumen') body=`
     <div class="ttl"><div><h1>Tu cartera, hoy</h1><p>Lo que entra, lo que falta cobrar y lo que tus agentes ya resolvieron.</p></div><span class="sp"></span>
       <div class="seg"><button>Semana</button><button class="on">Mes</button><button>Año</button></div><a class="btn pri" href="#" ${T}>${ic('download')} Exportar</a></div>
-    <div class="card brief"><span class="orb"></span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
+    <div class="card brief"><span class="spark">${ic('sparkles')}</span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
     <div class="grid k4">
       ${story('trending-up','Vendiste','$968.4','M','8%',1,'vs junio','5,528 pólizas activas · 674 renuevan este mes',null)}
       ${story('wallet','Cobraste','$43.4','M','12%',1,'vs junio','Falta cobrar $29.1M de lo emitido',33)}
