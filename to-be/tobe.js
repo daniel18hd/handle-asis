@@ -64,7 +64,6 @@ function header(){
   $('#hdr').className='glass lq sweep';
   $('#hdr').innerHTML=`
     <a class="brand" href="#/os/resumen">${HLOGO}</a>
-    <nav class="mode" id="mode"><span class="pill-bg"></span><a href="#/os/resumen" data-m="os">${ic('layout-grid')}<span>OS</span></a><a href="#/agentes/asistente" data-m="ag">${ic('sparkles')}<span>Agentes IA</span><i class="n">3</i></a></nav>
     <div class="theme"><button data-th="light" class="${th==='light'?'on':''}" title="Modo claro">${ic('sun')}</button><button data-th="dark" class="${th==='dark'?'on':''}" title="Modo oscuro">${ic('moon')}</button></div>
     <button class="hbtn" ${T} title="Notificaciones">${ic('bell')}<span class="dot"></span></button>
     <div class="split">
@@ -93,9 +92,11 @@ const RAIL_OS=[
 ];
 function railAgents(){return [['agentes/asistente','sparkles','Asistente Handle',0,'Asistente'],...AGENTS.map(a=>['agentes/'+a.id,a.i,a.n,a.cnt,a.n.split(' ')[0]])]}
 function rail(h){
-  const items=RAIL_OS;
-  $('#rail').className='glass lq';
-  $('#rail').innerHTML=items.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}${r[3]?`<span class="badge">${r[3]}</span>`:''}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
+  const R=$('#rail');R.className='rail2';
+  const os=RAIL_OS.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
+  const top=[{id:'asistente',n:'Asistente Handle'},...AGENTS.slice(0,5)];
+  const ag=top.map(a=>`<a href="#/agentes/${a.id}" class="mas ${h==='agentes/'+a.id?'on':''}">${mascot(a.id,30)}${a.cnt?`<span class="badge">${a.cnt}</span>`:''}<span class="tip">${a.n}</span></a>`).join('')+`<a href="#/agentes" class="all ${h==='agentes'?'on':''}">${ic('layout-grid')}<span class="tip">Todos los agentes</span><span class="ml">Agentes</span><span class="badge m">3</span></a>`;
+  R.innerHTML=`<div class="rbox glass lq"><span class="rl">OS</span>${os}</div><div class="rbox ag glass lq"><span class="rl">Agentes</span>${ag}</div>`;
 }
 /* ---------- helpers ---------- */
 function smooth(pts){let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];d+=` C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`}return d}
@@ -237,17 +238,18 @@ const CONVOS={
     side:[['Acceso','Toda la cartera'],['Agentes disponibles','8']],pend:[]}
 };
 function agView(id){
+  const mList=!id;if(!id)id='asistente';
   const a=AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',state:'Listo',today:''};
   const cv=CONVOS[id]||{title:'Sin conversaciones',threads:['Nueva conversación'],body:`<div class="a-msg"><p>Estoy al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
   const list=[{id:'asistente',n:'Asistente Handle',cnt:0},...AGENTS];
-  return `<div class="cx">
+  return `<div class="cx ${mList?'m-list':'m-chat'}">
     <aside class="cx-list card no-lift">
-      <div class="cx-top"><a class="back" href="#/os/resumen" title="Volver">${ic('arrow-left')}</a><span class="sp"></span><button class="hbtn sm2" ${T}>${ic('search')}</button><button class="hbtn sm2" ${T}>${ic('plus')}</button></div>
+      <div class="cx-top"><a class="back" href="#/os/resumen" title="Volver">${ic('arrow-left')}</a><b class="cx-title">Agentes</b><span class="sp"></span><button class="hbtn sm2" ${T}>${ic('search')}</button><button class="hbtn sm2" ${T}>${ic('plus')}</button></div>
       <div class="cx-items">${list.map(x=>`<a class="cx-it ${x.id===id?'on':''}" href="#/agentes/${x.id}">${mascot(x.id,42)}<span class="tx"><b>${x.n}</b><span>${AG_PREV[x.id]||''}</span></span>${x.cnt?`<i class="cnt">${x.cnt}</i>`:''}</a>`).join('')}</div>
       <div class="cx-me"><span class="av">DE</span><span><b>David Estrada</b><small>Grupo Ejemplo</small></span><span class="sp"></span><a class="hbtn sm2" href="#/config">${ic('settings')}</a></div>
     </aside>
     <section class="cx-chat">
-      <div class="cx-hd glass"><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b><span class="st"><i class="live"></i>${a.state}</span><span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
+      <div class="cx-hd glass"><a class="back back-m" href="#/agentes">${ic('chevron-left')}</a><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b><span class="st"><i class="live"></i>${a.state}</span><span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
       <div class="cx-body" id="cb"><div class="cx-day">Hoy</div>${cv.body}</div>
       <form class="cx-comp glass" id="cmp"><button type="button" class="hbtn sm2">${ic('plus')}</button><textarea rows="1" placeholder="Escríbele a ${a.n}…"></textarea><button type="button" class="hbtn sm2">${ic('mic')}</button><button class="voice" title="Enviar">${ic('arrow-up')}</button></form>
       <div class="drawer glass" id="drawer"><div style="display:flex;align-items:center;margin-bottom:8px"><h3>Cómo trabaja</h3><span class="sp"></span><span class="toggle"></span></div>${cv.side.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}
@@ -275,9 +277,9 @@ function cfgView(){return stageHead('')+`<div class="scroll"><div class="ttl"><d
 /* ---------- router ---------- */
 function render(){
   const h=location.hash.replace(/^#\/?/,'')||'os/resumen';const p=h.split('/');
-  header();rail(h);document.body.classList.toggle('immersive',p[0]==='agentes');
+  header();rail(h);document.body.classList.toggle('immersive',p[0]==='agentes'&&!(innerWidth<=820&&!p[1]));
   const st=$('#stage');st.className='glass';
-  st.innerHTML=p[0]==='agentes'?agView(p[1]||'cobranza'):p[0]==='config'?cfgView():osView(p[1]||'resumen');
+  st.innerHTML=p[0]==='agentes'?agView(p[1]||(innerWidth<=820?'':'asistente')):p[0]==='config'?cfgView():osView(p[1]||'resumen');
   document.querySelectorAll('#mode a').forEach(x=>x.classList.toggle('on',(x.dataset.m==='ag')===(p[0]==='agentes')));
   st.classList.remove('enter');void st.offsetWidth;st.classList.add('enter');
   if(!$('#adock'))document.body.insertAdjacentHTML('beforeend',assistDock());
