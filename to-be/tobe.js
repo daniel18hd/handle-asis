@@ -361,7 +361,7 @@ function route(){
   const h=location.hash.replace(/^#\/?/,'')||'os/resumen',p=h.split('/'),prev=ROUTE;ROUTE=h;
   const mob=innerWidth<=820,isAg=p[0]==='agentes';
   railSync(h);$('#menu')?.classList.remove('on');
-  document.body.classList.toggle('immersive',isAg&&!(mob&&!p[1]));
+  document.body.classList.toggle('immersive',isAg&&!(mob&&!p[1]));document.body.classList.toggle('agr',isAg);
   const cx=$('.cx');
   if(prev&&prev.split('/')[0]==='agentes'&&isAg&&cx){
     if(!mob&&p[1]){swapChat(p[1]);return}
