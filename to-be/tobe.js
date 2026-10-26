@@ -37,18 +37,18 @@ function header(){
 /* ---------- rail ---------- */
 const RAIL=[
   ['os/resumen','house','Inicio'],
-  ['agentes/cobranza','sparkles','Agentes IA',3],
+  ['agentes/cobranza','sparkles','Agentes IA',3,'Agentes'],
   ['os/clientes','users','Clientes'],
   ['os/polizas','scroll-text','Pólizas'],
-  ['os/recibos','receipt','Recibos y cobranza'],
+  ['os/recibos','receipt','Recibos y cobranza',0,'Cobranza'],
   ['os/cotizaciones','file-text','Cotizaciones'],
   ['os/comisiones','chart-pie','Comisiones'],
   '-',
-  ['config','settings','Configuración']
+  ['config','settings','Configuración',0,'Ajustes']
 ];
 function rail(h){
   $('#rail').className='glass';
-  $('#rail').innerHTML=RAIL.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${(h===r[0]||(r[0].startsWith('agentes')&&h.startsWith('agentes'))||(r[0]==='config'&&h==='config'))?'on':''}">${ic(r[1])}${r[3]?`<span class="badge">${r[3]}</span>`:''}<span class="tip">${r[2]}</span></a>`).join('');
+  $('#rail').innerHTML=RAIL.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${(h===r[0]||(r[0].startsWith('agentes')&&h.startsWith('agentes'))||(r[0]==='config'&&h==='config'))?'on':''}">${ic(r[1])}${r[3]?`<span class="badge">${r[3]}</span>`:''}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
 }
 
 /* ---------- helpers ---------- */
@@ -70,6 +70,7 @@ function lineChart(){
   </svg>`;
 }
 function donut(parts,center,sub){const R=58,C=2*Math.PI*R;let off=0;return `<svg width="170" height="170" viewBox="0 0 150 150">${parts.map(([p,c])=>{const l=C*p;const s=`<circle r="${R}" cx="75" cy="75" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${Math.max(l-3,1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" stroke-linecap="round"/>`;off+=l;return s}).join('')}<text x="75" y="68" text-anchor="middle" font-size="9.5" style="fill:var(--mut)">${sub}</text><text x="75" y="88" text-anchor="middle" font-size="20" font-weight="700" style="fill:var(--ink)">${center}</text><text x="75" y="102" text-anchor="middle" font-size="8.5" style="fill:var(--mut)">este mes</text></svg>`}
+const story=(icn,l,v,u,d,up,cmp,expl,prog,risk)=>`<div class="card kpi ${risk?'risk':''}"><div class="hd"><span class="ic">${ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↑'} ${d}</span><span class="cmp">${cmp}</span>${prog!=null?`<div class="bar" style="margin-top:12px"><i style="width:${prog}%"></i></div>`:''}<div class="expl">${expl}</div></div>`;
 const kpi=(icn,l,v,u,d,up,cmp)=>`<div class="card kpi"><div class="hd"><span class="ic">${ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↓'} ${d}</span><span class="cmp">${cmp}</span></div>`;
 
 /* ---------- OS ---------- */
@@ -80,11 +81,12 @@ function osView(sec){
   if(sec==='resumen') body=`
     <div class="ttl"><div><h1>Tu cartera, hoy</h1><p>Lo que entra, lo que falta cobrar y lo que tus agentes ya resolvieron.</p></div><span class="sp"></span>
       <div class="seg"><button>Semana</button><button class="on">Mes</button><button>Año</button></div><a class="btn pri" href="#" ${T}>${ic('download')} Exportar</a></div>
+    <div class="card brief"><span class="orb"></span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
     <div class="grid k4">
-      ${kpi('trending-up','Prima neta emitida','$968.4','M','8%',1,'vs junio')}
-      ${kpi('wallet','Cobrado del mes','$43.4','M','12%',1,'33% de lo emitido')}
-      ${kpi('alarm-clock','Cartera vencida','$2.36','M','4%',0,'360 recibos')}
-      ${kpi('refresh-cw','Renovaciones del mes','674','','9%',1,'$41.2M en prima')}
+      ${story('trending-up','Vendiste','$968.4','M','8%',1,'vs junio','5,528 pólizas activas · 674 renuevan este mes',null)}
+      ${story('wallet','Cobraste','$43.4','M','12%',1,'vs junio','Falta cobrar $29.1M de lo emitido',33)}
+      ${story('badge-dollar-sign','Ganaste','$4.0','M','6%',1,'en comisiones','Comisión promedio 14.9% · +US$179K',null)}
+      ${story('triangle-alert','En riesgo','$2.36','M','4%',0,'más que junio','360 recibos vencidos · 280 pólizas canceladas',null,1)}
     </div>
     <div class="grid row2">
       <div class="card"><div style="display:flex;align-items:flex-start"><div><h3>Prima emitida vs cobrada</h3><div class="sub">Pasa el cursor para comparar cualquier día.</div></div><span class="sp"></span><div class="legend"><span><i class="dot" style="background:#e8683f"></i>Emitida</span><span><i class="dot" style="background:var(--ink)"></i>Cobrada</span></div></div>${lineChart()}</div>
