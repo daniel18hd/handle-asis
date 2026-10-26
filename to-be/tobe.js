@@ -303,7 +303,8 @@ function listView(t,s,chips,cols,rows){return `<div class="ttl"><div><h1>${t}</h
   <div class="card" style="padding:6px 12px"><table class="tbl"><thead><tr>${cols.map((c,i)=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`}
 
 /* ---------- Agentes ---------- */
-const REAL='asistente';
+const REAL='cobranza';
+const API_BASE='https://handle-demo-api.vercel.app';
 const realTag=(sm)=>`<span class="real${sm?' sm':''}"><i></i>${sm?'Real':'Agente real · prueba'}</span>`;
 function agentOf(id){return AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',state:'Listo',today:''}}
 function chatHTML(id){
@@ -311,7 +312,7 @@ function chatHTML(id){
   const cv=CONVOS[id]||{title:'Sin conversaciones',body:`<div class="a-msg"><p>Estoy al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
   return `<section class="cx-chat" data-id="${id}">
       <div class="cx-hd glass"><a class="back back-m" href="#/agentes" aria-label="Volver">${ic('chevron-left')}</a><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b>${id===REAL?realTag():`<span class="st"><i class="live"></i>${a.state}</span>`}<span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
-      <div class="cx-body" id="cb">${id===REAL?`<div class="real-note"><i></i><span><b>Este agente es real.</b> Responde con IA en vivo sobre la cartera de prueba de este demo.</span></div>`:''}<div class="cx-day">Hoy</div>${cv.body}</div>
+      <div class="cx-body" id="cb">${id===REAL?`<div class="real-note"><i></i><span><b>Este agente es real.</b> Ponle tu número y Sofía te cobra un recibo de prueba por llamada o WhatsApp.</span></div>${liveCard()}`:''}<div class="cx-day">Hoy</div>${cv.body}</div>
       <form class="cx-comp glass" id="cmp"><button type="button" class="hbtn sm2">${ic('plus')}</button><textarea rows="1" placeholder="Escríbele a ${a.n}…"></textarea><button type="button" class="hbtn sm2">${ic('mic')}</button><button class="voice" title="Enviar">${ic('arrow-up')}</button></form>
       <div class="drawer glass" id="drawer"><div class="dh"><h3>Cómo trabaja</h3><span class="sp"></span><span class="toggle"></span></div>${cv.side.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}
         ${cv.pend.length?`<h3 style="margin-top:16px">Necesita tu aprobación</h3>${cv.pend.map(([k,v])=>`<div class="kv"><span style="color:var(--ink)">${k}</span><b style="color:var(--org)">${v}</b></div>`).join('')}`:''}
@@ -335,7 +336,39 @@ function swapChat(id){
   if(REDUCED){fin();return}
   old.querySelector('.cx-body').animate([{opacity:1},{opacity:0,transform:'translateY(-4px)'}],{duration:140,easing:'ease-in',fill:'forwards'}).onfinish=fin;
 }
-function mountChat(){
+function liveCard(){return `<div class="live-card" id="lv">
+  <div class="lv-hd">${mascot('cobranza',34)}<div><b>Prueba la cobranza en vivo</b><small>Recibo de prueba · GNP Auto · $4,350 · venció 20 oct</small></div></div>
+  <div class="lv-ch" id="lvch"><i class="thumb"></i><button type="button" data-ch="llamada" class="on">${ic('phone')} Llamada</button><button type="button" data-ch="whatsapp">${ic('message-circle')} WhatsApp</button></div>
+  <form class="lv-f" id="lvf" autocomplete="on">
+    <label><span>Tu nombre</span><input name="nombre" required maxlength="40" placeholder="Ej. Poncho" autocomplete="given-name"></label>
+    <label><span>Tu celular</span><div class="ph"><select name="cc"><option value="52">🇲🇽 +52</option><option value="1">🇺🇸 +1</option></select><input name="tel" required inputmode="tel" placeholder="55 1234 5678" autocomplete="tel-national"></div></label>
+    <input name="website" tabindex="-1" autocomplete="off" class="hp">
+    <button class="btn pri lv-go" type="submit"><span>Detonar cobranza</span>${ic('arrow-up-right')}</button>
+  </form>
+  <ol class="lv-steps" id="lvs" hidden></ol>
+  <p class="lv-legal">Demo de Handle. Solo te contactamos a ti, una vez, con datos ficticios.</p>
+</div>`}
+const LV={ch:'llamada'};
+function lvThumb(){const s=$('#lvch');if(!s)return;const b=s.querySelector('button.on'),t=s.querySelector('.thumb');t.style.width=b.offsetWidth+'px';t.style.transform=`translateX(${b.offsetLeft-4}px)`}
+function lvStep(txt,state){const ol=$('#lvs');ol.hidden=false;const li=document.createElement('li');li.className=state||'run';li.innerHTML=`<i></i><span>${txt}</span>`;ol.querySelectorAll('li.run').forEach(x=>x.className='ok');ol.appendChild(li);return li}
+async function lvPoll(id,t0){for(let i=0;i<60;i++){await new Promise(r=>setTimeout(r,4000));try{const r=await fetch(`${API_BASE}/api/estado?id=${encodeURIComponent(id)}`);const j=await r.json();
+  if(j.status==='in-progress'&&!LV.talk){LV.talk=1;lvStep('Sofía está hablando contigo…')}
+  if(j.status==='done'||j.status==='failed'){const R={pagara_hoy:'Pagará hoy',promesa_pago:'Promesa de pago'+(j.fecha_promesa?` · ${j.fecha_promesa}`:''),ya_pago:'Dice que ya pagó → Validador',escalar_humano:'Pidió un asesor humano',no_es_titular:'No era el titular',sin_acuerdo:'Sin acuerdo'};
+    lvStep(j.status==='failed'?'La llamada no se completó':`Resultado: <b>${R[j.resultado]||'Llamada terminada'}</b>${j.whatsapp_enviado?' · link enviado por WhatsApp':''}`,j.status==='failed'?'err':'ok');if(j.resumen)lvStep(j.resumen,'note');return}}catch(e){}}}
+function mountLive(){const f=$('#lvf');if(!f)return;lvThumb();
+  $$('#lvch button').forEach(b=>b.onclick=()=>{LV.ch=b.dataset.ch;$$('#lvch button').forEach(x=>x.classList.toggle('on',x===b));lvThumb();f.querySelector('.lv-go span').textContent=LV.ch==='llamada'?'Detonar cobranza':'Enviar por WhatsApp'});
+  f.onsubmit=async e=>{e.preventDefault();if(f.website.value)return;const tel=(f.tel.value||'').replace(/\D/g,''),cc=f.cc.value;
+    if((cc==='52'&&tel.length!==10)||(cc==='1'&&tel.length!==10)){f.tel.focus();f.tel.closest('.ph').classList.add('bad');setTimeout(()=>f.tel.closest('.ph').classList.remove('bad'),900);return}
+    const go=f.querySelector('.lv-go');go.disabled=true;go.classList.add('busy');$('#lvs').innerHTML='';LV.talk=0;
+    lvStep(LV.ch==='llamada'?'Sofía revisa el recibo y marca a tu celular…':'Sofía prepara el mensaje de WhatsApp…');
+    try{const r=await fetch(`${API_BASE}/api/cobranza`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({nombre:f.nombre.value.trim(),cc,tel,canal:LV.ch})});const j=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(j.error||'No se pudo iniciar');
+      if(LV.ch==='llamada'){lvStep('Marcando… contesta tu celular 📞');if(j.conversation_id)lvPoll(j.conversation_id)}
+      else lvStep('Mensaje enviado. Revisa tu WhatsApp 💬','ok');
+    }catch(err){lvStep(err.message==='Failed to fetch'?'El agente aún no está conectado a este demo.':err.message,'err')}
+    finally{setTimeout(()=>{go.disabled=false;go.classList.remove('busy')},LV.ch==='llamada'?20000:6000)}};
+}
+function mountChat(){mountLive();
   $('#infoBtn')&&($('#infoBtn').onclick=()=>$('#drawer').classList.toggle('on'));
   const cmp=$('#cmp');if(cmp)cmp.onsubmit=e=>{e.preventDefault();const ta=cmp.querySelector('textarea');if(!ta.value.trim())return;const cb=$('#cb');
     cb.insertAdjacentHTML('beforeend',`<div class="u-msg in">${ta.value.replace(/</g,'&lt;')}</div><div class="a-msg in"><p class="typing"><i></i><i></i><i></i></p></div>`);ta.value='';cb.scrollTo({top:cb.scrollHeight,behavior:'smooth'});
