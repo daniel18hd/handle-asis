@@ -573,3 +573,10 @@ html.dark .rbox.ag a.mas.on{background:rgba(255,255,255,.14)}
   .drawer{top:56px;left:8px;right:8px;width:auto}
   body.immersive #stage{left:0!important;right:0!important;top:0!important;bottom:0!important;border-radius:0!important}
 }
+@media (min-width:821px){
+  #rail{top:96px!important;transform:none!important;bottom:auto!important}
+  .rbox{gap:4px;padding:24px 6px 8px;border-radius:26px}
+  #rail a{width:36px;height:36px}
+  .rbox .sep{margin:2px 0}
+  body.immersive #rail{transform:translateX(-110px)!important}
+}

@@ -94,7 +94,7 @@ function railAgents(){return [['agentes/asistente','sparkles','Asistente Handle'
 function rail(h){
   const R=$('#rail');R.className='rail2';
   const os=RAIL_OS.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
-  const top=[{id:'asistente',n:'Asistente Handle'},...AGENTS.slice(0,5)];
+  const top=[{id:'asistente',n:'Asistente Handle'},...AGENTS.slice(0,3)];
   const ag=top.map(a=>`<a href="#/agentes/${a.id}" class="mas ${h==='agentes/'+a.id?'on':''}">${mascot(a.id,30)}${a.cnt?`<span class="badge">${a.cnt}</span>`:''}<span class="tip">${a.n}</span></a>`).join('')+`<a href="#/agentes" class="all ${h==='agentes'?'on':''}">${ic('layout-grid')}<span class="tip">Todos los agentes</span><span class="ml">Agentes</span><span class="badge m">3</span></a>`;
   R.innerHTML=`<div class="rbox glass lq"><span class="rl">OS</span>${os}</div><div class="rbox ag glass lq"><span class="rl">Agentes</span>${ag}</div>`;
 }
@@ -300,7 +300,7 @@ applyTheme();window.addEventListener('hashchange',render);render();
 
 /* ---------- motion: dock magnify on rail, cursor light on cards ---------- */
 document.addEventListener('mousemove',e=>{
-  const r=$('#rail');if(r&&innerWidth>820&&!document.body.classList.contains('immersive')){const rb=r.getBoundingClientRect();const near=e.clientX<rb.right+40&&e.clientY>rb.top-40&&e.clientY<rb.bottom+40;r.querySelectorAll('a').forEach(a=>{const b=a.getBoundingClientRect();const d=Math.abs(e.clientY-(b.top+b.height/2));const sc=near?Math.max(1,1.32-d/120):1;const px=Math.round(40*sc);a.style.width=px+'px';a.style.height=px+'px'})}
+  const r=$('#rail');if(r&&innerWidth>820&&!document.body.classList.contains('immersive')){const rb=r.getBoundingClientRect();const near=e.clientX<rb.right+40&&e.clientY>rb.top-40&&e.clientY<rb.bottom+40;r.querySelectorAll('a').forEach(a=>{const b=a.getBoundingClientRect();const d=Math.abs(e.clientY-(b.top+b.height/2));const sc=near?Math.max(1,1.22-d/110):1;const px=Math.round(36*sc);a.style.width=px+'px';a.style.height=px+'px'})}
   const c=e.target.closest('.card,.lq');if(c){const b=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-b.left)+'px');c.style.setProperty('--my',(e.clientY-b.top)+'px')}
 });
 document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>{a.style.width='';a.style.height=''})});
