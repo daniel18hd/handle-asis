@@ -44,6 +44,7 @@ function mascot(id,sz=40){const m=MS[id]||MS.asistente;const e=m.e||'#141210';co
   <g class="eyes"><ellipse cx="${19+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/><ellipse cx="${29+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/>
   <circle cx="${19.8+dx}" cy="20.6" r=".9" fill="#fff" opacity=".85"/><circle cx="${29.8+dx}" cy="20.6" r=".9" fill="#fff" opacity=".85"/></g>
   <ellipse cx="${15+dx}" cy="28" rx="2.4" ry="1.3" fill="#fff" opacity=".35"/><ellipse cx="${33+dx}" cy="28" rx="2.4" ry="1.3" fill="#fff" opacity=".35"/></svg>`}
+const ROBOT=`<svg class="robot" viewBox="0 0 48 48"><line x1="24" y1="9" x2="24" y2="4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle class="tip" cx="24" cy="4" r="3" fill="#C8F07A"/><rect x="7" y="10" width="34" height="28" rx="12" fill="#1c1d20"/><rect x="3" y="20" width="4" height="9" rx="2" fill="#1c1d20"/><rect x="41" y="20" width="4" height="9" rx="2" fill="#1c1d20"/><g class="eyes"><rect x="15" y="19" width="5" height="8" rx="2.5" fill="#C8F07A"/><rect x="28" y="19" width="5" height="8" rx="2.5" fill="#C8F07A"/></g><path d="M19 32q5 3 10 0" stroke="#C8F07A" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".8"/></svg>`;
 const AG_PREV={asistente:'Pregúntame lo que sea de tu cartera.',cobranza:'Vamos bien: $412K de $753K ya pagados o prometidos.',pagos:'Confirmé 39 pagos. 3 no cuadran.',cotizacion:'Tengo 212 renovaciones listas para enviar.',conciliador:'Me falta el archivo de comisiones de marzo.',siniestros:'3 reportes médicos vencidos en AXA.',extractor:'Actualicé 50 pólizas desde portales.',kyc:'Sin pendientes por ahora.',feedback:'4 clientes respondieron la encuesta.'};
 
 /* iconos de pendientes */
@@ -67,9 +68,9 @@ function header(){
     <div class="theme"><button data-th="light" class="${th==='light'?'on':''}" title="Modo claro">${ic('sun')}</button><button data-th="dark" class="${th==='dark'?'on':''}" title="Modo oscuro">${ic('moon')}</button></div>
     <button class="hbtn" ${T} title="Notificaciones">${ic('bell')}<span class="dot"></span></button>
     <div class="split">
-      <a class="me" href="#" ${T}><span class="av">DE</span><span><b>David Estrada</b><span>Grupo Ejemplo · Admin</span></span></a>
+      <a class="me" href="#" ${T} title="David Estrada · Admin"><span class="av">DE</span></a>
       <button class="caret" id="caret">${ic('chevron-down')}</button>
-      <div class="menu glass" id="menu">
+      <div class="menu" id="menu"><div class="mhd"><span class="av">DE</span><div><b>David Estrada</b><small>Grupo Ejemplo · Admin</small></div></div><hr>
         <a href="#" ${T}>${ic('user')} Mi perfil</a>
         <a href="#" ${T}>${ic('building-2')} Organización</a>
         <a href="#" ${T}>${ic('key-round')} Credenciales de aseguradoras</a>
@@ -95,7 +96,7 @@ function rail(h){
   const R=$('#rail');R.className='rail2';
   const os=RAIL_OS.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
   const pend=AGENTS.reduce((a,x)=>a+(x.cnt?1:0),0);
-  R.innerHTML=`<div class="rbox ag glass lq"><a href="#/agentes" class="agbtn ${h.startsWith('agentes')?'on':''}">${mascot('asistente',26)}<span class="badge">${pend}</span><span class="tip">Agentes · ${pend} con pendientes</span><span class="ml">Agentes</span></a></div><div class="rbox glass lq">${os}</div>`;
+  R.innerHTML=`<div class="rbox ag glass lq"><a href="#/agentes" class="agbtn ${h.startsWith('agentes')?'on':''}">${ROBOT}<span class="badge">${pend}</span><span class="tip">Agentes · ${pend} con pendientes</span><span class="ml">Agentes</span></a></div><div class="rbox glass lq">${os}</div>`;
 }
 /* ---------- helpers ---------- */
 function smooth(pts){let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];d+=` C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`}return d}
@@ -141,7 +142,7 @@ function bindChart(){
   svg.addEventListener('mouseleave',()=>{g.setAttribute('opacity',0);tip.classList.remove('on')});
 }
 function donutI(total){const R=58,C=2*Math.PI*R;let off=0;
-  const segs=SHARE.map(([n,p,c],k)=>{const l=C*p;const sg=`<circle class="seg" data-k="${k}" r="${R}" cx="75" cy="75" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${Math.max(l-3,1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" stroke-linecap="round"/>`;off+=l;return sg}).join('');
+  const segs=SHARE.map(([n,p,c],k)=>{const l=C*p;const sg=`<circle class="seg" data-k="${k}" r="${R}" cx="75" cy="75" fill="none" stroke="${c}" stroke-width="11" stroke-dasharray="${Math.max(l-3,1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" stroke-linecap="round"/>`;off+=l;return sg}).join('');
   return `<div class="dnut" data-total="${total}"><svg width="180" height="180" viewBox="0 0 150 150">${segs}<text class="c1" x="75" y="66" text-anchor="middle" font-size="9.5" style="fill:var(--mut)">Prima emitida</text><text class="c2" x="75" y="86" text-anchor="middle" font-size="19" font-weight="700" style="fill:var(--ink)">${M(total)}</text><text class="c3" x="75" y="101" text-anchor="middle" font-size="8.5" style="fill:var(--mut)">100% · 17 aseguradoras</text></svg></div>
   <div class="cats">${SHARE.map(([n,p,c],k)=>`<div class="cat" data-k="${k}"><span><i class="dot" style="background:${c}"></i> ${n}</span><span class="tr"><i style="width:${p/.35*100}%;background:${c}"></i></span><b>${M(total*p)}</b><small>${Math.round(p*100)}%</small></div>`).join('')}</div>`}
 function bindDonut(){const box=$('.dnut');if(!box)return;const tot=+box.dataset.total,cats=document.querySelectorAll('.cat[data-k]');
@@ -315,7 +316,7 @@ function render(){
   if(!$('#adock'))document.body.insertAdjacentHTML('beforeend',assistDock());
   $('#infoBtn')&&($('#infoBtn').onclick=()=>$('#drawer').classList.toggle('on'));
   if(window.lucide)lucide.createIcons();bindChart();bindDonut();
-  const sc=$('#stage .scroll');document.body.classList.remove('compact');if(sc)sc.addEventListener('scroll',()=>document.body.classList.toggle('compact',sc.scrollTop>24),{passive:true});
+  const sc=$('#stage .scroll');TK=0;if(sc)sc.addEventListener('scroll',()=>{TK=Math.min(1,sc.scrollTop/120)},{passive:true});
   const cmp=$('#cmp');if(cmp)cmp.onsubmit=e=>{e.preventDefault();const ta=cmp.querySelector('textarea');if(!ta.value.trim())return;const cb=$('#cb');cb.insertAdjacentHTML('beforeend',`<div class="u-msg">${ta.value.replace(/</g,'&lt;')}</div><div class="a-msg">${step('loader','Pensando…','')}</div>`);ta.value='';cb.scrollTop=cb.scrollHeight;lucide.createIcons();setTimeout(()=>{cb.lastElementChild.innerHTML=step('database','Consulté tus registros','0.7s','sor_policy · sor_receipt')+'<p>Listo. En la versión real aquí respondo con datos de tu cartera y, si hace falta, le paso la tarea al agente correcto.</p>';lucide.createIcons();cb.scrollTop=cb.scrollHeight},1100)};
 }
 document.addEventListener('click',e=>{
@@ -338,3 +339,9 @@ document.addEventListener('mousemove',e=>{
 document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>{a.style.width='';a.style.height=''})});
 
 document.addEventListener('submit',e=>{if(e.target.id==='adf'){e.preventDefault();const i=$('#adi');if(i.value.trim()){askDock(i.value);i.value=''}}});
+
+/* scroll fluido: interpolación continua del header y side */
+let TK=0,CK=0;(function loop(){CK+=(TK-CK)*.14;if(Math.abs(TK-CK)<.001)CK=TK;document.documentElement.style.setProperty('--k',CK.toFixed(4));requestAnimationFrame(loop)})();
+/* asistente: abre siempre al tocar la barra o enfocar el input */
+document.addEventListener('pointerdown',e=>{const bar=e.target.closest('#adf');if(bar&&!e.target.closest('.voice')&&!e.target.closest('#adx')){$('#adock').classList.add('open');if(!e.target.closest('input'))setTimeout(()=>$('#adi').focus(),0)}},true);
+document.addEventListener('focusin',e=>{if(e.target.id==='adi')$('#adock').classList.add('open')});

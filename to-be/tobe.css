@@ -653,3 +653,48 @@ html.dark .cats .cat.on{background:rgba(255,255,255,.07)}
   .agbtn{width:auto!important;height:54px!important;min-width:58px;flex-direction:column;gap:2px}
   .agbtn .ml{display:block}
 }
+
+/* ================= v9 ================= */
+/* scroll fluido (--k 0→1) */
+:root{--k:0}
+#hdr,#rail,#stage{transition:none}
+@media (min-width:821px){
+  #hdr{top:calc(14px - 6px*var(--k));height:calc(58px - 12px*var(--k));left:calc(16px + 44px*var(--k));right:calc(16px + 44px*var(--k));border-radius:calc(30px - 6px*var(--k))}
+  #hdr>*{transform:scale(calc(1 - .1*var(--k)))}
+  #hdr .brand{transform-origin:left center}
+  #rail{top:calc(96px - 30px*var(--k))!important;left:calc(16px - 6px*var(--k))!important;transform:scale(calc(1 - .14*var(--k)))!important;transform-origin:left top}
+  #stage{top:calc(84px - 22px*var(--k));left:calc(88px - 18px*var(--k));right:calc(16px - 8px*var(--k));bottom:calc(14px - 6px*var(--k))}
+  body.immersive #hdr{transform:translateY(-90px)}
+  body.immersive #rail{transform:translateX(-110px)!important}
+  body.immersive #stage{left:14px!important;right:14px!important;top:14px!important;bottom:14px!important}
+  #hdr,#rail{transition:opacity .4s var(--ease)}
+  #stage{transition:border-radius .4s}
+}
+@media (max-width:820px){
+  #hdr{top:calc(10px - 4px*var(--k));height:calc(52px - 8px*var(--k));left:calc(10px + 14px*var(--k));right:calc(10px + 14px*var(--k))}
+  #stage{top:calc(72px - 14px*var(--k))}
+}
+/* dona más delgada */
+.dnut.act .seg.on{stroke-width:16!important}
+/* perfil: solo avatar */
+.split .me{padding:0 2px 0 4px}
+.menu{background:rgba(255,255,255,.94)!important;backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);border:1px solid rgba(255,255,255,.9);box-shadow:0 20px 50px -12px rgba(40,25,10,.35)!important;width:240px!important;top:52px!important}
+html.dark .menu{background:rgba(26,28,32,.96)!important;border-color:rgba(255,255,255,.08)}
+.menu::before{display:none}
+.mhd{display:flex;align-items:center;gap:10px;padding:8px 10px 6px}
+.mhd b{font-size:13px;display:block}.mhd small{font-size:11px;color:var(--mut)}
+/* robot vivo en el side */
+.agbtn{position:relative;overflow:visible!important;width:46px!important;height:46px!important;color:#1c1d20}
+html.dark .agbtn{color:#e9ebee}
+.robot{width:34px;height:34px;animation:bob 3.2s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+.robot .eyes{animation:blink2 4.5s infinite;transform-origin:24px 23px}
+.robot .tip{animation:glow 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2.5px) rotate(-3deg)}}
+@keyframes blink2{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.15)}}
+@keyframes glow{0%,100%{opacity:1;filter:drop-shadow(0 0 2px #C8F07A)}50%{opacity:.55;filter:none}}
+.agbtn:hover .robot{animation-duration:1.2s}
+.agbtn .badge{top:-6px!important;right:-6px!important;min-width:18px;height:18px;font-size:10px;border:2px solid rgba(255,255,255,.9);z-index:3}
+.rbox.ag{overflow:visible}
+/* asistente: z-index sobre todo */
+.adock{z-index:40}
+.ad-bar{cursor:text}
