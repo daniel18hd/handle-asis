@@ -44,21 +44,22 @@ const AGENTS=[
   {id:'feedback',n:'Feedback',i:'message-circle',bg:'rgba(20,18,16,.08)',c:'var(--ink2)',today:'4 respuestas de clientes',state:'Al día',cnt:0}
 ];
 const step=(i,t,tm,out)=>`<details class="step"><summary>${ic(i)} ${t}<span class="tm">${tm}</span></summary>${out?`<pre>${out}</pre>`:''}</details>`;
-const CONVOS={
-  cobranza:{title:'Cobranza de esta semana',threads:['Cobranza de esta semana','Escalados de ayer','Ajustar tono para corporativos','Plan de recuperación vencidos >24d'],
-    body:`    <div class="a-msg">
-      ${step('database','Leí 4,285 recibos pendientes del sistema de registro','0.8s','sor_receipt · estatus=pendiente · vence<=2026-07-12\n→ 93 recibos esta semana · 89 clientes · $753,142.44 MXN')}
+const COB_QA=[
+ {q:'¿Cómo va la cobranza de esta semana?',a:()=>`${step('database','Leí 4,285 recibos pendientes del sistema de registro','0.8s','sor_receipt · estatus=pendiente · vence<=2026-07-12\n→ 93 recibos esta semana · 89 clientes · $753,142.44 MXN')}
       ${step('phone-outgoing','Revisé 59 contactos de hoy (llamada + WhatsApp)','1.2s','42 contestaron · 12 promesas de pago · 7 piden hablar con un humano')}
       ${step('shield-check','Crucé con pagos confirmados por el Validador','0.4s','8 clientes ya pagaron → los saqué de la cola')}
       <p>Vamos bien: <b>$412K de los $753K de esta semana ya están pagados o prometidos</b> (55%). Lo que necesito de ti:</p>
-      <div class="todo"><div class="done">${ic('circle-check')} Llamar a vencidos 1–14 días (59/59)</div><div class="done">${ic('circle-check')} Quitar de la cola a los 8 que ya pagaron</div><div>${ic('circle')} <b>Atender 7 clientes que pidieron a un humano</b> · $96K</div><div>${ic('circle')} Aprobar el cambio de tono para personas morales</div></div>
-      <p style="margin-top:10px">Para los corporativos, propongo este ajuste al tier <b>“Vencido 15–24 días”</b>. Hoy contestan 30% menos que personas físicas:</p>
+      <div class="todo"><div class="done">${ic('circle-check')} Llamar a vencidos 1–14 días (59/59)</div><div class="done">${ic('circle-check')} Quitar de la cola a los 8 que ya pagaron</div><div>${ic('circle')} <b>Atender 7 clientes que pidieron a un humano</b> · $96K</div></div>`},
+ {q:'¿Cómo mejoramos la respuesta de los corporativos?',a:()=>`<p>Los corporativos contestan <b>30% menos</b> que las personas físicas. Propongo este ajuste al tier <b>“Vencido 15–24 días”</b>:</p>
       <div class="diff"><div class="h">${ic('file-pen-line')} Estrategia · Vencido 15–24 días<span class="sp2"><span class="pill" style="background:rgba(47,158,91,.14);color:var(--grn)">+2</span><span class="pill" style="background:rgba(217,68,58,.13);color:var(--red)">−1</span></span></div>
         <div class="l del">- Tono cercano, recordar fecha de vencimiento.</div>
         <div class="l add">+ Si es persona moral: tono formal, dirigido a finanzas, con folio y monto.</div>
         <div class="l add">+ Si tiene varias pólizas vencidas, mencionarlas en un solo mensaje.</div></div>
-      <div class="approve"><a class="btn pri sm" href="#" data-toast="Cambio aplicado al agente">${ic('check')} Aplicar</a><a class="btn sm" href="#" ${T}>Editar</a><a class="btn sm" href="#" ${T}>Descartar</a></div>
-    </div>`,
+      <div class="approve"><a class="btn pri sm" href="#" data-toast="Cambio aplicado al agente">${ic('check')} Aplicar</a><a class="btn sm" href="#" data-toast="Abrí el editor de la estrategia">Editar</a></div>`}
+];
+const CONVOS={
+  cobranza:{title:'Cobranza de esta semana',threads:['Cobranza de esta semana','Escalados de ayer','Ajustar tono para corporativos','Plan de recuperación vencidos >24d'],
+    body:`<div class="qa-sug" id="qas"><span>Pregúntale a Sofía</span>${COB_QA.map((x,k)=>`<button class="qa-chip" data-qa="${k}">${x.q}${ic('arrow-up-right')}</button>`).join('')}</div>`,
     side:[['Autonomía','Supervisada'],['Canales','Llamada · WhatsApp'],['Horario','Lun–Sáb 9:00–19:00'],['Contactos hoy','59'],['Tasa de respuesta','71%'],['Cobrado por el agente (mes)','$1.9M']],
     pend:[['7 clientes piden un humano','$96K'],['Cambio de tono corporativos','Estrategia'],['Número de salida sin verificar','Twilio']]},
   pagos:{title:'Pagos con diferencia',threads:['Pagos con diferencia','Validación de esta mañana','Portales con error'],
@@ -101,18 +102,22 @@ const CONVOS={
 };
 
 function liveMascot(sz){const L='#C8F07A';
-  return `<svg class="masc lm s-idle" width="${sz}" height="${sz}" viewBox="0 0 48 48" aria-hidden="true">
+  return `<svg class="masc lm s-idle" width="${sz}" height="${sz}" viewBox="0 0 48 48" aria-hidden="true"><g class="all">
   <g class="bod"><rect x="5" y="7" width="38" height="34" rx="17" fill="#1c1d20"/><ellipse cx="17" cy="13" rx="8" ry="3" fill="#fff" opacity=".08"/></g>
   <g class="look">
     <g class="e-open"><g class="eyes"><ellipse cx="18.5" cy="22" rx="2.7" ry="3.7" fill="${L}"/><ellipse cx="29.5" cy="22" rx="2.7" ry="3.7" fill="${L}"/><circle cx="19.4" cy="20.5" r=".95" fill="#fff" opacity=".9"/><circle cx="30.4" cy="20.5" r=".95" fill="#fff" opacity=".9"/></g></g>
     <g class="e-wide"><ellipse cx="18.5" cy="21.5" rx="3.5" ry="4.6" fill="${L}"/><ellipse cx="29.5" cy="21.5" rx="3.5" ry="4.6" fill="${L}"/><circle cx="19.6" cy="19.8" r="1.2" fill="#fff"/><circle cx="30.6" cy="19.8" r="1.2" fill="#fff"/></g>
+    <g class="e-curious"><ellipse cx="18.5" cy="22.4" rx="2.4" ry="3" fill="${L}"/><ellipse cx="29.5" cy="21.4" rx="3.3" ry="4.4" fill="${L}"/><circle cx="19.2" cy="21.2" r=".8" fill="#fff" opacity=".9"/><circle cx="30.5" cy="19.9" r="1.1" fill="#fff"/></g>
   </g>
   <g class="e-happy" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"><path d="M15.3 23.2q3.2-4.4 6.4 0"/><path d="M26.3 23.2q3.2-4.4 6.4 0"/></g>
   <g class="e-wink"><ellipse cx="18.5" cy="22" rx="2.7" ry="3.7" fill="${L}"/><circle cx="19.4" cy="20.5" r=".95" fill="#fff" opacity=".9"/><path d="M26.3 22.6q3.2 2.6 6.4 0" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/></g>
+  <g class="e-sleepy" fill="${L}"><path d="M15.6 22.2a2.9 2 0 0 0 5.8 0z"/><path d="M26.6 22.2a2.9 2 0 0 0 5.8 0z"/></g>
   <path class="m-smile" d="M20 29.5q4 3.6 8 0" fill="none" stroke="${L}" stroke-width="2" stroke-linecap="round"/>
+  <path class="m-open" d="M20.4 28.8q3.6 5.4 7.2 0z" fill="${L}"/>
   <ellipse class="m-o" cx="24" cy="30.5" rx="1.9" ry="2.2" fill="${L}"/>
+  <path class="m-small" d="M22.4 30.6q1.6.9 3.2 0" fill="none" stroke="${L}" stroke-width="1.8" stroke-linecap="round"/>
   <ellipse class="ck" cx="13.5" cy="28.5" rx="2.6" ry="1.4" fill="#ff9d8a" opacity=".55"/><ellipse class="ck" cx="34.5" cy="28.5" rx="2.6" ry="1.4" fill="#ff9d8a" opacity=".55"/>
-  </svg>`}
+  </g></svg>`}
 function mascot(id,sz=40){const m=MS[id]||MS.asistente;const e=m.e||'#141210';const dx=m.ex||0;
   return `<svg class="masc" width="${sz}" height="${sz}" viewBox="0 0 48 48" aria-hidden="true"><g class="body" fill="${m.c}">${m.s}</g>
   <g class="look"><g class="eyes"><ellipse cx="${19+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/><ellipse cx="${29+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/>
@@ -311,7 +316,7 @@ function chatHTML(id){
   const cv=CONVOS[id]||{title:'Sin conversaciones',body:`<div class="a-msg"><p>Estoy al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
   return `<section class="cx-chat" data-id="${id}">
       <div class="cx-hd glass"><a class="back back-m" href="#/agentes" aria-label="Volver">${ic('chevron-left')}</a><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b>${id===REAL?realTag():`<span class="st"><i class="live"></i>${a.state}</span>`}<span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
-      <div class="cx-body" id="cb">${id===REAL?`<div class="real-note"><i></i><span><b>Este agente es real.</b> Ponle tu número y Sofía te cobra un recibo de prueba por llamada o WhatsApp.</span></div>${liveCard()}`:''}<div class="cx-day">Hoy</div>${cv.body}</div>
+      <div class="cx-body" id="cb">${id===REAL?`<div class="real-note"><i></i><span><b>Este agente es real.</b> Ponle tu número y Sofía te llama para cobrarte un recibo de prueba.</span></div>${liveCard()}`:''}<div class="cx-day">Hoy</div>${cv.body}</div>
       <form class="cx-comp glass" id="cmp"><button type="button" class="hbtn sm2">${ic('plus')}</button><textarea rows="1" placeholder="Escríbele a ${a.n}…"></textarea><button type="button" class="hbtn sm2">${ic('mic')}</button><button class="voice" title="Enviar">${ic('arrow-up')}</button></form>
       <div class="drawer glass" id="drawer"><div class="dh"><h3>Cómo trabaja</h3><span class="sp"></span><span class="toggle"></span></div>${cv.side.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}
         ${cv.pend.length?`<h3 style="margin-top:16px">Necesita tu aprobación</h3>${cv.pend.map(([k,v])=>`<div class="kv"><span style="color:var(--ink)">${k}</span><b style="color:var(--org)">${v}</b></div>`).join('')}`:''}
@@ -336,13 +341,12 @@ function swapChat(id){
   old.querySelector('.cx-body').animate([{opacity:1},{opacity:0,transform:'translateY(-4px)'}],{duration:140,easing:'ease-in',fill:'forwards'}).onfinish=fin;
 }
 function liveCard(){return `<div class="live-card" id="lv">
-  <div class="lv-hd">${mascot('cobranza',34)}<div><b>Prueba la cobranza en vivo</b><small>Recibo de prueba · GNP Auto · $4,350 · venció 20 oct</small></div></div>
-  <div class="lv-ch" id="lvch"><i class="thumb"></i><button type="button" data-ch="llamada" class="on">${ic('phone')} Llamada</button><button type="button" data-ch="whatsapp">${ic('message-circle')} WhatsApp</button></div>
+  <div class="lv-hd">${mascot('cobranza',34)}<div><b>Prueba la cobranza en vivo</b><small>Te llama en segundos · Recibo de prueba GNP Auto · $4,350</small></div></div>
   <form class="lv-f" id="lvf" autocomplete="on">
     <label><span>Tu nombre</span><input name="nombre" required maxlength="40" placeholder="Ej. Poncho" autocomplete="given-name"></label>
     <label><span>Tu celular</span><div class="ph"><select name="cc"><option value="52">🇲🇽 +52</option><option value="1">🇺🇸 +1</option></select><input name="tel" required inputmode="tel" placeholder="55 1234 5678" autocomplete="tel-national"></div></label>
     <input name="website" tabindex="-1" autocomplete="off" class="hp">
-    <button class="btn pri lv-go" type="submit"><span>Detonar cobranza</span>${ic('arrow-up-right')}</button>
+    <button class="btn pri lv-go" type="submit">${ic('phone')}<span>Llámame</span></button>
   </form>
   <ol class="lv-steps" id="lvs" hidden></ol>
   <p class="lv-legal">Demo de Handle. Solo te contactamos a ti, una vez, con datos ficticios.</p>
@@ -420,6 +424,9 @@ function route(){
 document.addEventListener('click',e=>{
   const pb=e.target.closest('[data-per]');if(pb){if(pb.dataset.per!==PER){PER=pb.dataset.per;$$('#per button').forEach(b=>b.classList.toggle('on',b===pb));segThumb();paintResumen(true)}return}
   if(e.target.closest('#adx')){$('#adock').classList.remove('open');return}
+  const qa=e.target.closest('[data-qa]');if(qa){const k=+qa.dataset.qa,cb=$('#cb');qa.remove();if(!$('#qas .qa-chip'))$('#qas')?.remove();
+    cb.insertAdjacentHTML('beforeend',`<div class="u-msg in">${COB_QA[k].q}</div><div class="a-msg in"><p class="typing"><i></i><i></i><i></i></p></div>`);cb.scrollTo({top:cb.scrollHeight,behavior:'smooth'});
+    setTimeout(()=>{cb.lastElementChild.innerHTML=COB_QA[k].a();icons();cb.lastElementChild.animate([{opacity:0},{opacity:1}],{duration:300});const sug=$('#qas');if(sug)cb.appendChild(sug);cb.scrollTo({top:cb.scrollHeight,behavior:'smooth'})},1100);return}
   const q=e.target.closest('[data-ask]');if(q){askDock(q.dataset.ask);return}
   if(e.target.closest('[data-thtoggle]')){const nx=getTheme()==='dark'?'light':'dark';try{localStorage.setItem('tb-th',nx)}catch(_){}const b=$('#thbtn');b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');syncTheme();return}
   if(e.target.closest('#caret')){$('#menu').classList.toggle('on');return}
@@ -443,12 +450,18 @@ window.addEventListener('resize',()=>segThumb());
 /* compactación continua (interpolada) */
 (function loop(){CK=CK<0?TK:CK+(TK-CK)*.16;if(Math.abs(TK-CK)<.0005)CK=TK;const v=CK.toFixed(4);if(v!==loop.v){document.documentElement.style.setProperty('--k',v);loop.v=v}requestAnimationFrame(loop)})();
 
-/* expresiones del agente en el side */
-const MOODS=['s-idle','s-happy','s-idle','s-wink','s-idle','s-wow','s-idle','s-happy','s-look'];let MI=0,HOV=false;
-function mood(m){const el=$('.agbtn .lm');if(!el||el.classList.contains(m))return;el.setAttribute('class','masc lm '+m);el.querySelector('.bod').animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-1.5px) scale(1.04,0.97)'},{transform:'none'}],{duration:420,easing:'cubic-bezier(.34,1.45,.64,1)'})}
-setInterval(()=>{if(HOV||document.hidden)return;MI=(MI+1)%MOODS.length;mood(MOODS[MI])},2300);
-document.addEventListener('pointerover',e=>{const a=e.target.closest&&e.target.closest('.rbox.ag');if(a&&!HOV){HOV=true;mood('s-happy')}});
-document.addEventListener('pointerout',e=>{const a=e.target.closest&&e.target.closest('.rbox.ag');if(a&&!a.contains(e.relatedTarget)){HOV=false;mood('s-idle')}});
+/* expresiones del agente en el side: pausadas, aleatorias, sin repetir */
+const MOODS_IDLE=['s-happy','s-wink','s-wow','s-look','s-think','s-sleepy','s-curious','s-shy','s-laugh'];
+const MOODS_HOV=['s-happy','s-wink','s-laugh','s-shy','s-wow','s-curious'];
+let HOV=false,LAST='',MT=null;
+const rnd=(a,b)=>a+Math.random()*(b-a),pick=l=>{let m;do{m=l[Math.floor(Math.random()*l.length)]}while(m===LAST&&l.length>1);LAST=m;return m};
+function mood(m){const el=$('.agbtn .lm');if(!el)return;el.setAttribute('class','masc lm '+m)}
+function moodLoop(){clearTimeout(MT);if(document.hidden){MT=setTimeout(moodLoop,3000);return}
+  if(HOV){mood(pick(MOODS_HOV));MT=setTimeout(moodLoop,rnd(2600,3600));return}
+  mood(pick(MOODS_IDLE));MT=setTimeout(()=>{if(!HOV)mood('s-idle');MT=setTimeout(moodLoop,rnd(3200,5600))},rnd(1900,2800))}
+MT=setTimeout(moodLoop,2500);
+document.addEventListener('pointerover',e=>{const a=e.target.closest&&e.target.closest('.rbox.ag');if(a&&!HOV){HOV=true;clearTimeout(MT);mood(pick(MOODS_HOV));MT=setTimeout(moodLoop,rnd(2600,3400))}});
+document.addEventListener('pointerout',e=>{const a=e.target.closest&&e.target.closest('.rbox.ag');if(a&&!a.contains(e.relatedTarget)){HOV=false;clearTimeout(MT);setTimeout(()=>{if(!HOV)mood('s-idle')},500);MT=setTimeout(moodLoop,rnd(2600,4000))}});
 
 /* ---------- arranque ---------- */
 header();rail();document.body.insertAdjacentHTML('beforeend',assistDock());icons();
