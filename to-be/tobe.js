@@ -94,30 +94,62 @@ function railAgents(){return [['agentes/asistente','sparkles','Asistente Handle'
 function rail(h){
   const R=$('#rail');R.className='rail2';
   const os=RAIL_OS.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
-  const top=[{id:'asistente',n:'Asistente Handle'},...AGENTS.slice(0,3)];
-  const ag=top.map(a=>`<a href="#/agentes/${a.id}" class="mas ${h==='agentes/'+a.id?'on':''}">${mascot(a.id,30)}${a.cnt?`<span class="badge">${a.cnt}</span>`:''}<span class="tip">${a.n}</span></a>`).join('')+`<a href="#/agentes" class="all ${h==='agentes'?'on':''}">${ic('layout-grid')}<span class="tip">Todos los agentes</span><span class="ml">Agentes</span><span class="badge m">3</span></a>`;
-  R.innerHTML=`<div class="rbox glass lq"><span class="rl">OS</span>${os}</div><div class="rbox ag glass lq"><span class="rl">Agentes</span>${ag}</div>`;
+  const pend=AGENTS.reduce((a,x)=>a+(x.cnt?1:0),0);
+  R.innerHTML=`<div class="rbox ag glass lq"><a href="#/agentes" class="agbtn ${h.startsWith('agentes')?'on':''}">${mascot('asistente',26)}<span class="badge">${pend}</span><span class="tip">Agentes · ${pend} con pendientes</span><span class="ml">Agentes</span></a></div><div class="rbox glass lq">${os}</div>`;
 }
 /* ---------- helpers ---------- */
 function smooth(pts){let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];d+=` C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`}return d}
-function lineChart(){
-  const W=720,H=230,pad=34,em=[42,55,61,48,72,66,58,80,74,69,86,78],co=[30,38,41,44,47,52,49,55,58,57,61,63];
-  const x=i=>pad+i*(W-pad-10)/(em.length-1),y=v=>H-24-(v/100)*(H-44);
-  const pe=em.map((v,i)=>[x(i),y(v)]),pc=co.map((v,i)=>[x(i),y(v)]);
-  const grid=[0,25,50,75,100].map(v=>`<line x1="${pad}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" opacity=".08"/><text x="0" y="${y(v)+3}">${v?('$'+v+'M'):'0'}</text>`).join('');
-  const lbl=['1 jul','4','7','10','13','16','19','22','25','28','30','31'].map((t,i)=>i%2?'':`<text x="${x(i)-10}" y="${H-4}">${i?t+' jul':t}</text>`).join('');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" style="color:var(--ink)">
+/* ---------- datos por periodo (cuadrados: sumas, % y comisiones coinciden) ---------- */
+let PER='mes';
+const PD={
+  semana:{lbl:['Lun 21','Mar 22','Mié 23','Jue 24','Vie 25','Sáb 26','Dom 27'],em:[3.1,3.6,3.4,3.9,4.2,1.1,0.5],co:[2.0,2.4,2.6,2.7,2.9,0.8,0.4],vs:'vs semana anterior',dv:[5,9,5,3],sub:'Semana del 21 al 27 de julio',vx:'412 pólizas emitidas · 138 renovaciones'},
+  mes:{lbl:['1–4 jul','5–8 jul','9–12 jul','13–16 jul','17–20 jul','21–24 jul','25–28 jul','29–31 jul'],em:[10.2,11.2,12.6,12.3,11.0,12.1,13.4,14.0],co:[6.1,7.1,8.0,8.8,7.4,8.5,8.9,9.4],vs:'vs junio',dv:[8,12,8,4],sub:'Julio 2026',vx:'1,786 pólizas emitidas · 674 renuevan este mes'},
+  ano:{lbl:['Ene','Feb','Mar','Abr','May','Jun','Jul'],em:[78.2,81.5,86.0,84.3,90.1,89.6,96.8],co:[60.1,62.4,65.8,66.0,70.2,68.9,64.2],vs:'vs 2025',dv:[11,14,11,6],sub:'Enero a julio 2026',vx:'12,502 pólizas en cartera · 5,528 activas'}
+};
+const SHARE=[['GNP',.35,'var(--p1)'],['Qualitas',.26,'var(--p2)'],['Chubb',.20,'var(--p3)'],['AXA',.13,'var(--p4)'],['Otras (12)',.06,'var(--p5)']];
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const M=v=>v>=100?'$'+v.toFixed(0)+'M':'$'+v.toFixed(1)+'M';
+const CH={W:720,H:230,pad:42};
+function chMax(d){return Math.ceil(Math.max(...d.em)*1.2/5)*5||5}
+function lineChart(d){
+  const {W,H,pad}=CH,mx=chMax(d),n=d.em.length;
+  const x=i=>pad+i*(W-pad-14)/(n-1),y=v=>H-26-(v/mx)*(H-46);
+  const pe=d.em.map((v,i)=>[x(i),y(v)]),pc=d.co.map((v,i)=>[x(i),y(v)]);
+  const grid=[0,.25,.5,.75,1].map(t=>t*mx).map(v=>`<line x1="${pad}" x2="${W-14}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" opacity=".07"/><text x="0" y="${y(v)+3}">${v?'$'+(+v.toFixed(1))+'M':'0'}</text>`).join('');
+  const lbl=d.lbl.map((t,i)=>`<text x="${x(i)}" y="${H-4}" text-anchor="${i===0?'start':i===n-1?'end':'middle'}">${t}</text>`).join('');
+  return `<div class="lc"><svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" style="color:var(--ink)">
     <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A6DC5A" stop-opacity=".38"/><stop offset="1" stop-color="#A6DC5A" stop-opacity="0"/></linearGradient></defs>
     ${grid}${lbl}
-    <path d="${smooth(pe)} L${x(em.length-1)},${H-24} L${pad},${H-24} Z" fill="url(#ga)"/>
-    <path d="${smooth(pe)}" fill="none" stroke="#7DBA34" stroke-width="2.6" stroke-linecap="round"/>
-    <path d="${smooth(pc)}" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
-    <circle cx="${x(7)}" cy="${y(80)}" r="5" fill="#7DBA34" stroke="#fff" stroke-width="2"/>
-    <g transform="translate(${x(7)-58},${y(80)-46})"><rect width="116" height="34" rx="10" fill="rgba(255,255,255,.85)"/><text x="10" y="14" style="fill:#6f665d">22 jul · emitida</text><text x="10" y="27" style="fill:#141210;font-weight:600">$80.2M · cobrada $55M</text></g>
-  </svg>`;
+    <path class="area" d="${smooth(pe)} L${x(n-1)},${H-26} L${pad},${H-26} Z" fill="url(#ga)"/>
+    <path class="ln" d="${smooth(pe)}" fill="none" stroke="#7DBA34" stroke-width="2.6" stroke-linecap="round"/>
+    <path class="ln" d="${smooth(pc)}" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+    <g class="hov" opacity="0"><line class="gl" y1="14" y2="${H-26}" stroke="currentColor" opacity=".25" stroke-dasharray="3 4"/><circle class="d1" r="5" fill="#7DBA34" stroke="#fff" stroke-width="2"/><circle class="d2" r="5" fill="currentColor" stroke="#fff" stroke-width="2"/></g>
+    <rect class="hit" x="${pad}" y="0" width="${W-pad-14}" height="${H-26}" fill="transparent"/>
+  </svg><div class="tipc"><b></b><span class="r1"></span><span class="r2"></span><span class="r3"></span></div></div>`;
 }
-function donut(parts,center,sub){const R=58,C=2*Math.PI*R;let off=0;return `<svg width="170" height="170" viewBox="0 0 150 150">${parts.map(([p,c])=>{const l=C*p;const s=`<circle r="${R}" cx="75" cy="75" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${Math.max(l-3,1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" stroke-linecap="round"/>`;off+=l;return s}).join('')}<text x="75" y="68" text-anchor="middle" font-size="9.5" style="fill:var(--mut)">${sub}</text><text x="75" y="88" text-anchor="middle" font-size="20" font-weight="700" style="fill:var(--ink)">${center}</text><text x="75" y="102" text-anchor="middle" font-size="8.5" style="fill:var(--mut)">este mes</text></svg>`}
-const story=(icn,l,v,u,d,up,cmp,expl,prog,risk)=>`<div class="card kpi ${risk?'risk':''} t-${icn}"><div class="hd"><span class="ic ci-wrap">${CI[icn]||ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↑'} ${d}</span><span class="cmp">${cmp}</span>${prog!=null?`<div class="bar" style="margin-top:12px"><i style="width:${prog}%"></i></div>`:''}<div class="expl">${expl}</div></div>`;
+function bindChart(){
+  const box=$('.lc');if(!box)return;const d=PD[PER],svg=box.querySelector('svg'),n=d.em.length,{W,H,pad}=CH,mx=chMax(d);
+  const x=i=>pad+i*(W-pad-14)/(n-1),y=v=>H-26-(v/mx)*(H-46);const g=svg.querySelector('.hov'),tip=box.querySelector('.tipc');
+  const set=(el,a)=>Object.entries(a).forEach(([k,v])=>el.setAttribute(k,v));
+  const show=i=>{g.setAttribute('opacity',1);set(g.querySelector('.gl'),{x1:x(i),x2:x(i)});set(g.querySelector('.d1'),{cx:x(i),cy:y(d.em[i])});set(g.querySelector('.d2'),{cx:x(i),cy:y(d.co[i])});
+    tip.querySelector('b').textContent=d.lbl[i];
+    tip.querySelector('.r1').innerHTML=`<i style="background:#7DBA34"></i>Emitida<em>${M(d.em[i])}</em>`;
+    tip.querySelector('.r2').innerHTML=`<i style="background:var(--ink)"></i>Cobrada<em>${M(d.co[i])}</em>`;
+    tip.querySelector('.r3').textContent=Math.round(d.co[i]/d.em[i]*100)+'% cobrado';
+    const r=svg.getBoundingClientRect(),px=x(i)/W*r.width;tip.style.left=Math.min(Math.max(px,80),r.width-80)+'px';tip.style.top=(Math.min(y(d.em[i]),y(d.co[i]))/H*r.height)+'px';tip.classList.add('on')};
+  svg.addEventListener('mousemove',e=>{const r=svg.getBoundingClientRect();const vx=(e.clientX-r.left)/r.width*W;let i=Math.round((vx-pad)/((W-pad-14)/(n-1)));show(Math.max(0,Math.min(n-1,i)))});
+  svg.addEventListener('mouseleave',()=>{g.setAttribute('opacity',0);tip.classList.remove('on')});
+}
+function donutI(total){const R=58,C=2*Math.PI*R;let off=0;
+  const segs=SHARE.map(([n,p,c],k)=>{const l=C*p;const sg=`<circle class="seg" data-k="${k}" r="${R}" cx="75" cy="75" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${Math.max(l-3,1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" stroke-linecap="round"/>`;off+=l;return sg}).join('');
+  return `<div class="dn" data-total="${total}"><svg width="180" height="180" viewBox="0 0 150 150">${segs}<text class="c1" x="75" y="66" text-anchor="middle" font-size="9.5" style="fill:var(--mut)">Prima emitida</text><text class="c2" x="75" y="86" text-anchor="middle" font-size="19" font-weight="700" style="fill:var(--ink)">${M(total)}</text><text class="c3" x="75" y="101" text-anchor="middle" font-size="8.5" style="fill:var(--mut)">100% · 17 aseguradoras</text></svg></div>
+  <div class="cats">${SHARE.map(([n,p,c],k)=>`<div class="cat" data-k="${k}"><span><i class="dot" style="background:${c}"></i> ${n}</span><span class="tr"><i style="width:${p/.35*100}%;background:${c}"></i></span><b>${M(total*p)}</b><small>${Math.round(p*100)}%</small></div>`).join('')}</div>`}
+function bindDonut(){const box=$('.dn');if(!box)return;const tot=+box.dataset.total,cats=document.querySelectorAll('.cat[data-k]');
+  const lab=(a,b,c)=>{box.querySelector('.c1').textContent=a;box.querySelector('.c2').textContent=b;box.querySelector('.c3').textContent=c};
+  const on=k=>{box.classList.add('act');box.querySelectorAll('.seg').forEach(s=>s.classList.toggle('on',+s.dataset.k===k));cats.forEach(c=>c.classList.toggle('on',+c.dataset.k===k));const [n,p]=SHARE[k];lab(n,M(tot*p),Math.round(p*100)+'% de la prima')};
+  const off=()=>{box.classList.remove('act');box.querySelectorAll('.seg').forEach(s=>s.classList.remove('on'));cats.forEach(c=>c.classList.remove('on'));lab('Prima emitida',M(tot),'100% · 17 aseguradoras')};
+  box.querySelectorAll('.seg').forEach(s=>{s.onmouseenter=()=>on(+s.dataset.k);s.onmouseleave=off});cats.forEach(c=>{c.onmouseenter=()=>on(+c.dataset.k);c.onmouseleave=off});}
+const story=(l,v,u,d,up,cmp,expl,prog,risk)=>`<div class="card kpi clean ${risk?'risk':''}"><div class="hd">${l}</div><div class="v">${v}<small>${u||''}</small></div><div class="dl"><span class="delta ${up?'up':'dn'}">↑ ${d}%</span><span class="cmp">${cmp}</span></div>${prog!=null?`<div class="bar"><i style="width:${prog}%"></i></div>`:''}<div class="expl">${expl}</div></div>`;
 const kpi=(icn,l,v,u,d,up,cmp)=>`<div class="card kpi"><div class="hd"><span class="ic">${ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↓'} ${d}</span><span class="cmp">${cmp}</span></div>`;
 
 /* ---------- OS ---------- */
@@ -125,20 +157,18 @@ const OS_TABS=[['resumen','Resumen'],['clientes','Clientes'],['polizas','Póliza
 function stageHead(active){return '';`<div class="stage-hd"><div class="tabs-main"><a href="#/os/resumen" class="${active==='os'?'on':''}">${ic('layout-grid')} OS</a><a href="#/agentes/cobranza" class="${active==='ag'?'on':''}">${ic('sparkles')} Agentes IA <span class="n">8</span></a></div><span class="sp"></span><span style="color:var(--mut);font-size:12px">Sincronizado hace 2 min · 17 aseguradoras</span></div>`}
 function osView(sec){
   let body='';
-  if(sec==='resumen') body=`
-    <div class="ttl"><div><h1>Tu cartera, hoy</h1><p>Lo que entra, lo que falta cobrar y lo que tus agentes ya resolvieron.</p></div><span class="sp"></span>
-      <div class="seg"><button>Semana</button><button class="on">Mes</button><button>Año</button></div><a class="btn pri" href="#" ${T}>${ic('download')} Exportar</a></div>
-    <div class="card brief"><span class="spark">${HMARK}</span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
+  if(sec==='resumen'){const d=PD[PER],E=sum(d.em),C=sum(d.co),pc=Math.round(C/E*100);body=`
+    <div class="ttl"><div><h1>Tu cartera, hoy</h1><p>${d.sub}</p></div><span class="sp"></span>
+      <div class="seg" id="per">${[['semana','Semana'],['mes','Mes'],['ano','Año']].map(([k,t])=>`<button data-per="${k}" class="${PER===k?'on':''}">${t}</button>`).join('')}</div><a class="btn pri" href="#" ${T}>${ic('download')} Exportar</a></div>
     <div class="grid k4">
-      ${story('vendiste','Vendiste','$968.4','M','8%',1,'vs junio','5,528 pólizas activas · 674 renuevan este mes',null)}
-      ${story('cobraste','Cobraste','$43.4','M','12%',1,'vs junio','Falta cobrar $29.1M de lo emitido',33)}
-      ${story('ganaste','Ganaste','$4.0','M','6%',1,'en comisiones','Comisión promedio 14.9% · +US$179K',null)}
-      ${story('riesgo','En riesgo','$2.36','M','4%',0,'más que junio','360 recibos vencidos · 280 pólizas canceladas',null,1)}
+      ${story('Vendiste',M(E).slice(0,-1),'M',d.dv[0],1,d.vs,d.vx,null)}
+      ${story('Cobraste',M(C).slice(0,-1),'M',d.dv[1],1,d.vs,`${pc}% de lo emitido · faltan ${M(E-C)}`,pc)}
+      ${story('Ganaste',M(E*.149).slice(0,-1),'M',d.dv[2],1,'en comisiones','Comisión promedio de 14.9% sobre lo emitido',null)}
+      ${story('En riesgo','$2.36','M',d.dv[3],0,'vs periodo anterior','360 recibos vencidos · 280 pólizas canceladas',null,1)}
     </div>
     <div class="grid row2">
-      <div class="card"><div style="display:flex;align-items:flex-start"><div><h3>Prima emitida vs cobrada</h3><div class="sub">Pasa el cursor para comparar cualquier día.</div></div><span class="sp"></span><div class="legend"><span><i class="dot" style="background:#7DBA34"></i>Emitida</span><span><i class="dot" style="background:var(--ink)"></i>Cobrada</span></div></div>${lineChart()}</div>
-      <div class="card"><h3>Prima por aseguradora</h3><div style="display:flex;justify-content:center;margin:8px 0 2px">${donut([[.35,'var(--p1)'],[.26,'var(--p2)'],[.2,'var(--p3)'],[.13,'var(--p4)'],[.06,'var(--p5)']],'$968M','Prima neta')}</div>
-        ${[['GNP','var(--p1)',35],['Qualitas','var(--p2)',26],['Chubb','var(--p3)',20],['AXA','var(--p4)',13],['Otras (12)','var(--p5)',6]].map(([n,c,p])=>`<div class="cat"><span><i class="dot" style="background:${c}"></i> ${n}</span><span class="tr"><i style="width:${p*2.6}%;background:${c}"></i></span><b>${p}%</b></div>`).join('')}</div>
+      <div class="card"><div style="display:flex;align-items:flex-start"><div><h3>Prima emitida vs cobrada</h3><div class="sub">${d.sub}</div></div><span class="sp"></span><div class="legend"><span><i class="dot" style="background:#7DBA34"></i>Emitida · ${M(E)}</span><span><i class="dot" style="background:var(--ink)"></i>Cobrada · ${M(C)}</span></div></div>${lineChart(d)}</div>
+      <div class="card"><h3>Prima por aseguradora</h3><div class="sub">${d.sub}</div>${donutI(E)}</div>
     </div>
     <div class="grid row3">
       <div class="card"><div style="display:flex;align-items:center"><h3>Necesita tu atención</h3><span class="sp"></span><span class="pill" style="background:rgba(232,104,63,.15);color:var(--org)">5 pendientes</span></div><div class="sub" style="margin-bottom:6px">Ordenado por dinero en juego. Cada uno abre al agente responsable.</div>
@@ -152,7 +182,7 @@ function osView(sec){
       <div class="card"><div style="display:flex;align-items:center"><h3>Tus agentes hoy</h3><span class="sp"></span><a class="btn sm" href="#/agentes/cobranza">Abrir agentes ${ic('arrow-right')}</a></div><div class="sub" style="margin-bottom:6px">Trabajo hecho por la IA desde las 7:00 am.</div>
         ${AGENTS.slice(0,6).map(a=>`<a class="agentline" href="#/agentes/${a.id}">${mascot(a.id,36)}<span><b style="font-weight:600">${a.n}</b><br><span style="color:var(--mut);font-size:11.5px">${a.today}</span></span><span class="st"><i class="live"></i>${a.state}</span></a>`).join('')}
       </div>
-    </div>`;
+    </div>`;}
   else if(sec==='clientes') body=listView('Clientes','6,056 clientes · 2,241 con póliza activa · $16.2M en cartera',['Todos','Con vencidos','Renuevan este mes','Personas morales'],
     ['Cliente','Pólizas','Prima anual','Estado','Siguiente paso'],D.clientes.slice(0,12).map((c,i)=>`<tr><td><span class="who"><span class="av">${c.n.split(' ').map(x=>x[0]).slice(0,2).join('')}</span><span><b style="font-weight:600">${c.n}</b><br><span style="color:var(--mut);font-size:11px">${c.tipo} · ${c.rfc}</span></span></span></td><td class="m">${c.pol||1}</td><td class="m">$${f(8000+i*3471.5)}</td><td>${i%4===1?'<span class="pill" style="background:rgba(217,68,58,.13);color:var(--red)">Recibo vencido</span>':i%3===0?'<span class="pill" style="background:rgba(74,108,247,.14);color:var(--blu)">Renueva en 12 días</span>':'<span class="pill" style="background:rgba(47,158,91,.14);color:var(--grn)">Al corriente</span>'}</td><td style="color:var(--mut)">${i%4===1?'Cobranza llamó ayer · promesa de pago':'—'}</td></tr>`).join(''));
   else if(sec==='polizas') body=listView('Pólizas','12,502 pólizas · 5,528 activas · $17.0M de prima activa',['Activas','Pendientes','Por renovar','Canceladas'],
@@ -284,10 +314,12 @@ function render(){
   st.classList.remove('enter');void st.offsetWidth;st.classList.add('enter');
   if(!$('#adock'))document.body.insertAdjacentHTML('beforeend',assistDock());
   $('#infoBtn')&&($('#infoBtn').onclick=()=>$('#drawer').classList.toggle('on'));
-  if(window.lucide)lucide.createIcons();
+  if(window.lucide)lucide.createIcons();bindChart();bindDonut();
+  const sc=$('#stage .scroll');document.body.classList.remove('compact');if(sc)sc.addEventListener('scroll',()=>document.body.classList.toggle('compact',sc.scrollTop>24),{passive:true});
   const cmp=$('#cmp');if(cmp)cmp.onsubmit=e=>{e.preventDefault();const ta=cmp.querySelector('textarea');if(!ta.value.trim())return;const cb=$('#cb');cb.insertAdjacentHTML('beforeend',`<div class="u-msg">${ta.value.replace(/</g,'&lt;')}</div><div class="a-msg">${step('loader','Pensando…','')}</div>`);ta.value='';cb.scrollTop=cb.scrollHeight;lucide.createIcons();setTimeout(()=>{cb.lastElementChild.innerHTML=step('database','Consulté tus registros','0.7s','sor_policy · sor_receipt')+'<p>Listo. En la versión real aquí respondo con datos de tu cartera y, si hace falta, le paso la tarea al agente correcto.</p>';lucide.createIcons();cb.scrollTop=cb.scrollHeight},1100)};
 }
 document.addEventListener('click',e=>{
+  const pb=e.target.closest('[data-per]');if(pb){PER=pb.dataset.per;const y=$('#stage .scroll')?.scrollTop||0;render();$('#stage .scroll').scrollTop=y;return}
   if(e.target.closest('#adx')){$('#adock').classList.remove('open');return}
   const q=e.target.closest('[data-ask]');if(q){askDock(q.dataset.ask);return}
   if(e.target.closest('#adi'))$('#adock').classList.add('open');

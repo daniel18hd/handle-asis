@@ -582,3 +582,74 @@ html.dark .rbox.ag a.mas.on{background:rgba(255,255,255,.14)}
 }
 @media (max-width:820px){#hdr .brand .hlogo{display:inline-flex!important}#hdr .hlogo .wd{width:64px;height:15px}#hdr .hlogo .mk{width:22px;height:18px}}
 .rbox.ag a.mas svg{width:30px!important;height:30px!important}
+
+/* ================= v8 · limpieza, datos interactivos, scroll compacto ================= */
+/* brillo del header: sutil y ocasional */
+#hdr::after{background-image:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.28) 50%,transparent 58%)!important;animation:sweep 16s var(--ease) infinite!important}
+html.dark #hdr::after{background-image:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.06) 50%,transparent 58%)!important}
+@keyframes sweep{0%,82%{background-position:160% 0}100%{background-position:-60% 0}}
+/* side: agentes arriba, sin títulos */
+.rbox .rl{display:none!important}
+.rbox{padding:8px 6px!important}
+.agbtn{width:40px!important;height:40px!important}
+.agbtn .masc{width:26px;height:26px}
+.agbtn.on{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.65))!important}
+html.dark .agbtn.on{background:rgba(255,255,255,.14)!important}
+/* KPIs limpios */
+.ttl h1{font-size:26px}.ttl p{font-size:12.5px}
+.kpi.clean{padding:18px 20px}
+.kpi.clean .hd{font-size:12.5px;color:var(--mut);font-weight:500}
+.kpi.clean .v{font-size:28px;margin:8px 0 10px;letter-spacing:-.03em}
+.kpi.clean .v small{font-size:13px}
+.kpi.clean .dl{display:flex;align-items:center;gap:6px}
+.kpi.clean .bar{margin-top:12px}
+.kpi.clean .expl{font-size:11.5px;margin-top:10px}
+.card h3{font-size:13.5px}.card .sub{font-size:11.5px}
+/* tooltip de la gráfica */
+.lc{position:relative}
+.lc .area,.lc .ln{transition:opacity .3s}
+.tipc{position:absolute;transform:translate(-50%,calc(-100% - 14px));pointer-events:none;opacity:0;transition:opacity .2s,left .12s var(--ease),top .12s var(--ease);min-width:150px;
+  padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);box-shadow:0 10px 30px -8px rgba(0,0,0,.25);font-size:11.5px;display:flex;flex-direction:column;gap:4px;z-index:5}
+html.dark .tipc{background:rgba(30,32,36,.95);box-shadow:0 10px 30px -8px rgba(0,0,0,.6)}
+.tipc.on{opacity:1}
+.tipc b{font-size:11px;color:var(--mut);font-weight:500}
+.tipc span{display:flex;align-items:center;gap:6px}
+.tipc span i{width:7px;height:7px;border-radius:50%}
+.tipc em{font-style:normal;font-weight:700;margin-left:auto;color:var(--ink)}
+.tipc .r3{color:var(--grn);font-weight:600;font-size:10.5px}
+.hit{cursor:crosshair}
+/* dona interactiva */
+.dn{display:flex;justify-content:center;margin:8px 0 6px}
+.dn .seg{transition:stroke-width .35s var(--ease),opacity .35s;cursor:pointer}
+.dn.act .seg{opacity:.28}
+.dn.act .seg.on{opacity:1;stroke-width:24}
+.dn svg{transition:transform .5s var(--ease)}
+.dn:hover svg{transform:scale(1.03)}
+.cats .cat{grid-template-columns:96px 1fr 56px 34px;padding:4px 6px;border-radius:9px;transition:background .25s;cursor:default}
+.cats .cat small{text-align:right;color:var(--mut);font-size:11px}
+.cats .cat.on{background:rgba(255,255,255,.45)}
+html.dark .cats .cat.on{background:rgba(255,255,255,.07)}
+/* scroll compacto: header y side se reducen */
+#hdr,#rail,#stage{transition:all .45s var(--ease)}
+@media (min-width:821px){
+  body.compact #hdr{top:8px;height:46px;left:60px;right:60px;border-radius:24px}
+  body.compact #hdr .hlogo{transform:scale(.88);transform-origin:left center}
+  body.compact #hdr .hbtn,body.compact #hdr .theme,body.compact #hdr .split{transform:scale(.88)}
+  body.compact #rail{top:66px!important;transform:scale(.86)!important;transform-origin:left top;left:10px!important}
+  body.compact #stage{top:62px;left:70px;right:8px;bottom:8px}
+}
+@media (max-width:820px){
+  body.compact #hdr{top:6px;height:44px;left:24px;right:24px}
+  body.compact #stage{top:56px}
+  .cats .cat{grid-template-columns:80px 1fr 50px 30px}
+  .tipc{min-width:130px}
+}
+@media (max-width:820px){
+  .rbox.ag{order:2;flex:none!important;padding:0 6px!important}
+  .rbox:not(.ag){flex:1;order:1}
+  .rbox:not(.ag) a:nth-of-type(3),.rbox:not(.ag) a:nth-of-type(5),.rbox:not(.ag) a:nth-of-type(6){display:none!important}
+  .rbox:first-child a:nth-of-type(3){display:flex!important}
+  .rbox:not(.ag) a:nth-of-type(3){display:none!important}
+  .agbtn{width:auto!important;height:54px!important;min-width:58px;flex-direction:column;gap:2px}
+  .agbtn .ml{display:block}
+}
