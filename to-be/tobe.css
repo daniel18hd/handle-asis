@@ -479,3 +479,7 @@ html,body{transition:background .5s}
 html.dark .real-note{background:rgba(200,240,122,.08);border-color:rgba(200,240,122,.2)}
 .real-note i{width:8px;height:8px;border-radius:50%;background:#5bbf2a;flex:none;animation:livep 1.8s infinite}
 .real-note b{color:var(--ink)}
+.cx-it .tx .real{display:inline-flex;white-space:nowrap;overflow:visible;color:#2f4a0a;font-size:9px}
+html.dark .lm .bod rect{fill:#30333a}
+html.dark .lm{filter:drop-shadow(0 0 10px rgba(200,240,122,.14)) drop-shadow(0 6px 10px rgba(0,0,0,.4))!important}
+html.dark .masc g.body[fill="#1c1d20"]{fill:#30333a}
