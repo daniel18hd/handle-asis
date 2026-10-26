@@ -226,7 +226,7 @@ function paintDonut(anim){const d=PD[PER],tot=model(d).E,to=d.sh.slice();const f
   const mx=Math.max(...to);$$('#cats .cat').forEach((r,k)=>{r.querySelector('.tr i').style.width=(to[k]/mx*100)+'%';setT(r.querySelector('b'),M(tot*to[k]),anim);setT(r.querySelector('small'),Math.round(to[k]*100)+'%',anim)});
   if(DHOV>=0)centerDonut(false)}
 function bindDonut(){const dn=$('#dn');if(!dn)return;const sv=dn.querySelector('svg'),cats=$$('#cats .cat');
-  const hov=k=>{if(k===DHOV)return;DHOV=k;dn.classList.toggle('act',k>=0);dn.querySelectorAll('.sg').forEach(g=>g.classList.toggle('on',+g.dataset.k===k));cats.forEach(c=>c.classList.toggle('on',+c.dataset.k===k));$('#cats').classList.toggle('act',k>=0);centerDonut(true)};
+  const hov=k=>{if(k===DHOV)return;DHOV=k;dn.classList.toggle('hl',k>=0);dn.querySelectorAll('.sg').forEach(g=>g.classList.toggle('on',+g.dataset.k===k));cats.forEach(c=>c.classList.toggle('on',+c.dataset.k===k));$('#cats').classList.toggle('hl',k>=0);centerDonut(true)};
   sv.addEventListener('pointermove',e=>{const r=sv.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*150-75,py=(e.clientY-r.top)/r.height*150-75,dd=Math.hypot(px,py);
     if(dd<42||dd>74){hov(-1);return}const a=((Math.atan2(py,px)+Math.PI/2)/(2*Math.PI)+1)%1;let acc=0,k=0;for(;k<4;k++){acc+=DSH[k];if(a<acc)break}hov(k)});
   sv.addEventListener('pointerleave',()=>hov(-1));
