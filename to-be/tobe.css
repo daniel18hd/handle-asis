@@ -619,12 +619,12 @@ html.dark .tipc{background:rgba(30,32,36,.95);box-shadow:0 10px 30px -8px rgba(0
 .tipc .r3{color:var(--grn);font-weight:600;font-size:10.5px}
 .hit{cursor:crosshair}
 /* dona interactiva */
-.dn{display:flex;justify-content:center;margin:8px 0 6px}
-.dn .seg{transition:stroke-width .35s var(--ease),opacity .35s;cursor:pointer}
-.dn.act .seg{opacity:.28}
-.dn.act .seg.on{opacity:1;stroke-width:24}
-.dn svg{transition:transform .5s var(--ease)}
-.dn:hover svg{transform:scale(1.03)}
+.dnut{display:flex;justify-content:center;margin:8px 0 6px}
+.dnut .seg{transition:stroke-width .35s var(--ease),opacity .35s;cursor:pointer}
+.dnut.act .seg{opacity:.28}
+.dnut.act .seg.on{opacity:1;stroke-width:24}
+.dnut svg{transition:transform .5s var(--ease)}
+.dnut:hover svg{transform:scale(1.03)}
 .cats .cat{grid-template-columns:96px 1fr 56px 34px;padding:4px 6px;border-radius:9px;transition:background .25s;cursor:default}
 .cats .cat small{text-align:right;color:var(--mut);font-size:11px}
 .cats .cat.on{background:rgba(255,255,255,.45)}
