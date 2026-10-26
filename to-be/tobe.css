@@ -698,3 +698,5 @@ html.dark .agbtn{color:#e9ebee}
 /* asistente: z-index sobre todo */
 .adock{z-index:40}
 .ad-bar{cursor:text}
+html.dark .robot rect[fill="#1c1d20"]{fill:#3a3d44}
+html.dark .robot{filter:drop-shadow(0 0 8px rgba(200,240,122,.18))}
