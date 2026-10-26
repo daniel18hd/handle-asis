@@ -96,7 +96,7 @@ function rail(h){
   const R=$('#rail');R.className='rail2';
   const os=RAIL_OS.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
   const pend=AGENTS.reduce((a,x)=>a+(x.cnt?1:0),0);
-  R.innerHTML=`<div class="rbox ag glass lq"><a href="#/agentes" class="agbtn ${h.startsWith('agentes')?'on':''}">${ROBOT}<span class="badge">${pend}</span><span class="tip">Agentes · ${pend} con pendientes</span><span class="ml">Agentes</span></a></div><div class="rbox glass lq">${os}</div>`;
+  R.innerHTML=`<div class="rbox ag glass lq"><a href="#/agentes" class="agbtn ${h.startsWith('agentes')?'on':''}">${mascot('asistente',34)}<span class="badge">${pend}</span><span class="tip">Agentes · ${pend} con pendientes</span><span class="ml">Agentes</span></a></div><div class="rbox glass lq">${os}</div>`;
 }
 /* ---------- helpers ---------- */
 function smooth(pts){let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];d+=` C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`}return d}
@@ -333,7 +333,7 @@ applyTheme();window.addEventListener('hashchange',render);render();
 
 /* ---------- motion: dock magnify on rail, cursor light on cards ---------- */
 document.addEventListener('mousemove',e=>{
-  const r=$('#rail');if(r&&innerWidth>820&&!document.body.classList.contains('immersive')){const rb=r.getBoundingClientRect();const near=e.clientX<rb.right+40&&e.clientY>rb.top-40&&e.clientY<rb.bottom+40;r.querySelectorAll('a').forEach(a=>{const b=a.getBoundingClientRect();const d=Math.abs(e.clientY-(b.top+b.height/2));const sc=near?Math.max(1,1.22-d/110):1;const px=Math.round(36*sc);a.style.width=px+'px';a.style.height=px+'px'})}
+  /* side: sin redimensionar contenedor (hover vía CSS) */
   const c=e.target.closest('.card,.lq');if(c){const b=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-b.left)+'px');c.style.setProperty('--my',(e.clientY-b.top)+'px')}
 });
 document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>{a.style.width='';a.style.height=''})});

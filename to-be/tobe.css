@@ -700,3 +700,26 @@ html.dark .agbtn{color:#e9ebee}
 .ad-bar{cursor:text}
 html.dark .robot rect[fill="#1c1d20"]{fill:#3a3d44}
 html.dark .robot{filter:drop-shadow(0 0 8px rgba(200,240,122,.18))}
+
+/* ================= v10 ================= */
+/* botón agentes: mascota del asistente, contorno ajustado, badge pegado */
+.rbox.ag{padding:4px!important;border-radius:20px!important}
+.agbtn{width:42px!important;height:42px!important;border-radius:15px!important;background:none!important;box-shadow:none!important}
+.agbtn .masc{width:34px;height:34px;transition:transform .35s var(--ease)}
+.agbtn:hover .masc{transform:scale(1.1) rotate(-4deg)}
+.agbtn.on{background:rgba(255,255,255,.55)!important}
+html.dark .agbtn.on{background:rgba(255,255,255,.1)!important}
+.agbtn .badge{top:1px!important;right:1px!important;min-width:16px!important;height:16px!important;font-size:9px!important;padding:0 4px!important;border:2px solid #fff!important}
+html.dark .agbtn .badge{border-color:#1c1d20!important}
+/* side: contorno fijo, solo el ícono crece un poco */
+@media (min-width:821px){
+  #rail a{width:36px!important;height:36px!important;transition:transform .25s var(--ease),background .3s,box-shadow .3s!important}
+  .rbox:not(.ag) a:hover{transform:scale(1.14)!important}
+  .rbox:not(.ag) a:hover svg{transform:none}
+  .agbtn{width:42px!important;height:42px!important}
+  /* header se compacta más con el scroll */
+  #hdr{top:calc(14px - 8px*var(--k));height:calc(58px - 16px*var(--k));left:calc(16px + 90px*var(--k));right:calc(16px + 90px*var(--k));border-radius:calc(30px - 8px*var(--k))}
+  #hdr>*{transform:scale(calc(1 - .16*var(--k)))}
+  #stage{top:calc(84px - 30px*var(--k))}
+  #rail{top:calc(96px - 36px*var(--k))!important}
+}
