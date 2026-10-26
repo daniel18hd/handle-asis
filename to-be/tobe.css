@@ -403,3 +403,22 @@ html.dark .back{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,
   .ag b{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:70px}.ag span span{display:none}
   .ag .cnt{position:absolute;top:0;right:6px;margin:0}
 }
+
+/* ================= v5 · iconography ================= */
+.kpi .ci-wrap{width:40px;height:40px;border-radius:13px;border:0;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(255,255,255,.4));box-shadow:inset 0 1px 0 #fff,inset 0 -6px 12px -6px var(--tint),0 6px 14px -4px var(--tint)}
+html.dark .kpi .ci-wrap{background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 6px 14px -4px var(--tint)}
+.kpi .ci{width:22px;height:22px;color:var(--tc);transition:transform .5s var(--ease)}
+.kpi:hover .ci{transform:scale(1.1) rotate(-4deg)}
+.t-vendiste{--tc:#2f8f55;--tint:rgba(47,158,91,.35)}
+.t-cobraste{--tc:#3a5be0;--tint:rgba(74,108,247,.32)}
+.t-ganaste{--tc:#b7801a;--tint:rgba(242,185,59,.4)}
+.t-riesgo{--tc:#d0392f;--tint:rgba(217,68,58,.32)}
+html.dark .t-vendiste{--tc:#7fdca0}html.dark .t-cobraste{--tc:#97acff}html.dark .t-ganaste{--tc:#f5cd6c}html.dark .t-riesgo{--tc:#ff8b80}
+.kpi .hd{font-weight:500}
+.spark{width:44px;height:44px;border-radius:15px;background:linear-gradient(160deg,#2a2622,#0e0c0b)!important;color:#f3efe9!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 18px -6px rgba(0,0,0,.45)!important}
+.spark::after{display:none}
+.aimark{width:30px;height:30px}
+.aimark .ring{transform-origin:29px 11px;animation:ping 2.4s var(--ease) infinite}
+.aimark .node{filter:drop-shadow(0 0 4px rgba(224,254,162,.9))}
+@keyframes ping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(2.6);opacity:0}}

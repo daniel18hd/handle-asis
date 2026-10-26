@@ -6,6 +6,22 @@ const LOGO = `<svg viewBox="0 0 24 24" width="17" height="17"><path d="M5 18.5 1
 const T = 'data-toast="Interacción de la propuesta"';
 function toast(m){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),1600)}
 
+
+/* ---------- custom iconography (duotone, 24px grid, 1.6 stroke) ---------- */
+const SV=(b)=>`<svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${b}</svg>`;
+const CI={
+  // póliza emitida: documento con sello + flecha de crecimiento
+  vendiste:SV(`<path d="M6 3.5h8l4 4V20a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 20V4a.5.5 0 0 1 .5-.5Z" fill="currentColor" fill-opacity=".14"/><path d="M14 3.5V7.5h4"/><path d="M9 16.5l2.4-2.6 1.8 1.6L16 12.5"/><path d="M14 12.5h2v2"/>`),
+  // cobro: moneda con check
+  cobraste:SV(`<circle cx="11" cy="12" r="7.5" fill="currentColor" fill-opacity=".14"/><path d="M11 7.5v1.2M11 15.3v1.2"/><path d="M13.2 9.6c-.4-.7-1.2-1.1-2.2-1.1-1.3 0-2.2.7-2.2 1.7 0 2.3 4.6 1.3 4.6 3.6 0 1-1 1.7-2.4 1.7-1.1 0-2-.5-2.4-1.3"/><path d="M17.5 17.8l1.6 1.6 3-3.2"/>`),
+  // comisión: sello/medalla con porcentaje
+  ganaste:SV(`<path d="M12 2.8l2.1 1.5 2.6-.1.8 2.5 2.1 1.6-.8 2.5.8 2.5-2.1 1.6-.8 2.5-2.6-.1L12 18.8l-2.1-1.5-2.6.1-.8-2.5-2.1-1.6.8-2.5-.8-2.5 2.1-1.6.8-2.5 2.6.1Z" fill="currentColor" fill-opacity=".14"/><path d="M9.6 13.4l4.8-4.8"/><circle cx="9.8" cy="8.9" r=".9" fill="currentColor"/><circle cx="14.2" cy="13.1" r=".9" fill="currentColor"/>`),
+  // riesgo: recibo con reloj de vencimiento
+  riesgo:SV(`<path d="M6 3.5h9.5a.5.5 0 0 1 .5.5v6"/><path d="M6 3.5v16.5l2-1.3 2 1.3 1.6-1"/><path d="M8.5 8h5M8.5 11h3"/><circle cx="16.5" cy="16" r="4.8" fill="currentColor" fill-opacity=".14"/><path d="M16.5 13.6V16l1.6 1"/>`),
+};
+// Handle intelligence mark: los dos trazos de Handle + nodo de luz
+const AIMARK=`<svg class="aimark" viewBox="0 0 40 40"><defs><linearGradient id="am" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E0FEA2"/><stop offset="1" stop-color="#9FD86B"/></linearGradient></defs><path d="M11 29 18.5 11M21.5 29 29 11" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" fill="none"/><circle class="node" cx="29" cy="11" r="3.4" fill="url(#am)"/><circle class="ring" cx="29" cy="11" r="3.4" fill="none" stroke="#C9F08A" stroke-width="1.2"/></svg>`;
+
 /* ---------- theme ---------- */
 const getTheme=()=>localStorage.getItem('tb-th')||'light';
 function applyTheme(){document.documentElement.classList.toggle('dark',getTheme()==='dark')}
@@ -69,7 +85,7 @@ function lineChart(){
   </svg>`;
 }
 function donut(parts,center,sub){const R=58,C=2*Math.PI*R;let off=0;return `<svg width="170" height="170" viewBox="0 0 150 150">${parts.map(([p,c])=>{const l=C*p;const s=`<circle r="${R}" cx="75" cy="75" fill="none" stroke="${c}" stroke-width="18" stroke-dasharray="${Math.max(l-3,1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" stroke-linecap="round"/>`;off+=l;return s}).join('')}<text x="75" y="68" text-anchor="middle" font-size="9.5" style="fill:var(--mut)">${sub}</text><text x="75" y="88" text-anchor="middle" font-size="20" font-weight="700" style="fill:var(--ink)">${center}</text><text x="75" y="102" text-anchor="middle" font-size="8.5" style="fill:var(--mut)">este mes</text></svg>`}
-const story=(icn,l,v,u,d,up,cmp,expl,prog,risk)=>`<div class="card kpi ${risk?'risk':''}"><div class="hd"><span class="ic">${ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↑'} ${d}</span><span class="cmp">${cmp}</span>${prog!=null?`<div class="bar" style="margin-top:12px"><i style="width:${prog}%"></i></div>`:''}<div class="expl">${expl}</div></div>`;
+const story=(icn,l,v,u,d,up,cmp,expl,prog,risk)=>`<div class="card kpi ${risk?'risk':''} t-${icn}"><div class="hd"><span class="ic ci-wrap">${CI[icn]||ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↑'} ${d}</span><span class="cmp">${cmp}</span>${prog!=null?`<div class="bar" style="margin-top:12px"><i style="width:${prog}%"></i></div>`:''}<div class="expl">${expl}</div></div>`;
 const kpi=(icn,l,v,u,d,up,cmp)=>`<div class="card kpi"><div class="hd"><span class="ic">${ic(icn)}</span>${l}</div><div class="v">${v}<small>${u||''}</small></div><span class="delta ${up?'up':'dn'}">${up?'↑':'↓'} ${d}</span><span class="cmp">${cmp}</span></div>`;
 
 /* ---------- OS ---------- */
@@ -80,12 +96,12 @@ function osView(sec){
   if(sec==='resumen') body=`
     <div class="ttl"><div><h1>Tu cartera, hoy</h1><p>Lo que entra, lo que falta cobrar y lo que tus agentes ya resolvieron.</p></div><span class="sp"></span>
       <div class="seg"><button>Semana</button><button class="on">Mes</button><button>Año</button></div><a class="btn pri" href="#" ${T}>${ic('download')} Exportar</a></div>
-    <div class="card brief"><span class="spark">${ic('sparkles')}</span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
+    <div class="card brief"><span class="spark">${AIMARK}</span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
     <div class="grid k4">
-      ${story('trending-up','Vendiste','$968.4','M','8%',1,'vs junio','5,528 pólizas activas · 674 renuevan este mes',null)}
-      ${story('wallet','Cobraste','$43.4','M','12%',1,'vs junio','Falta cobrar $29.1M de lo emitido',33)}
-      ${story('badge-dollar-sign','Ganaste','$4.0','M','6%',1,'en comisiones','Comisión promedio 14.9% · +US$179K',null)}
-      ${story('triangle-alert','En riesgo','$2.36','M','4%',0,'más que junio','360 recibos vencidos · 280 pólizas canceladas',null,1)}
+      ${story('vendiste','Vendiste','$968.4','M','8%',1,'vs junio','5,528 pólizas activas · 674 renuevan este mes',null)}
+      ${story('cobraste','Cobraste','$43.4','M','12%',1,'vs junio','Falta cobrar $29.1M de lo emitido',33)}
+      ${story('ganaste','Ganaste','$4.0','M','6%',1,'en comisiones','Comisión promedio 14.9% · +US$179K',null)}
+      ${story('riesgo','En riesgo','$2.36','M','4%',0,'más que junio','360 recibos vencidos · 280 pólizas canceladas',null,1)}
     </div>
     <div class="grid row2">
       <div class="card"><div style="display:flex;align-items:flex-start"><div><h3>Prima emitida vs cobrada</h3><div class="sub">Pasa el cursor para comparar cualquier día.</div></div><span class="sp"></span><div class="legend"><span><i class="dot" style="background:#e8683f"></i>Emitida</span><span><i class="dot" style="background:var(--ink)"></i>Cobrada</span></div></div>${lineChart()}</div>
