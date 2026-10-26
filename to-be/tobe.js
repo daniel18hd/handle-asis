@@ -46,8 +46,7 @@ const AGENTS=[
 const step=(i,t,tm,out)=>`<details class="step"><summary>${ic(i)} ${t}<span class="tm">${tm}</span></summary>${out?`<pre>${out}</pre>`:''}</details>`;
 const CONVOS={
   cobranza:{title:'Cobranza de esta semana',threads:['Cobranza de esta semana','Escalados de ayer','Ajustar tono para corporativos','Plan de recuperación vencidos >24d'],
-    body:`<div class="u-msg">¿Cómo va la cobranza de esta semana y qué necesitas de mí?</div>
-    <div class="a-msg">
+    body:`    <div class="a-msg">
       ${step('database','Leí 4,285 recibos pendientes del sistema de registro','0.8s','sor_receipt · estatus=pendiente · vence<=2026-07-12\n→ 93 recibos esta semana · 89 clientes · $753,142.44 MXN')}
       ${step('phone-outgoing','Revisé 59 contactos de hoy (llamada + WhatsApp)','1.2s','42 contestaron · 12 promesas de pago · 7 piden hablar con un humano')}
       ${step('shield-check','Crucé con pagos confirmados por el Validador','0.4s','8 clientes ya pagaron → los saqué de la cola')}
