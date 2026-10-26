@@ -422,3 +422,4 @@ html.dark .t-vendiste{--tc:#7fdca0}html.dark .t-cobraste{--tc:#97acff}html.dark 
 .aimark .ring{transform-origin:29px 11px;animation:ping 2.4s var(--ease) infinite}
 .aimark .node{filter:drop-shadow(0 0 4px rgba(224,254,162,.9))}
 @keyframes ping{0%{transform:scale(1);opacity:.9}80%,100%{transform:scale(2.6);opacity:0}}
+.kpi .ic svg.ci{width:22px;height:22px}
