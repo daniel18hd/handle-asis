@@ -13,12 +13,11 @@ function applyTheme(){document.documentElement.classList.toggle('dark',getTheme(
 /* ---------- header ---------- */
 function header(){
   const th=getTheme();
-  $('#hdr').className='glass';
+  $('#hdr').className='glass lq sweep';
   $('#hdr').innerHTML=`
     <a class="brand" href="#/os/resumen"><span class="lg">${LOGO}</span><span>Handle<small>Hola, David</small></span></a>
-    <form class="ask" onsubmit="event.preventDefault();location.hash='#/agentes/asistente'">
-      <span class="orb"></span><input placeholder="Pídele algo a Handle… “¿qué recibos vencen esta semana?”"><span class="kbd">⌘K</span>
-    </form>
+    <nav class="mode" id="mode"><span class="pill-bg"></span><a href="#/os/resumen" data-m="os">${ic('layout-grid')}<span>OS</span></a><a href="#/agentes/asistente" data-m="ag">${ic('sparkles')}<span>Agentes IA</span><i class="n">3</i></a></nav>
+    <button class="hbtn srch" onclick="location.hash='#/agentes/asistente'" title="Buscar o preguntar (⌘K)">${ic('search')}<span>Buscar o preguntar</span><span class="kbd">⌘K</span></button>
     <div class="theme"><button data-th="light" class="${th==='light'?'on':''}" title="Modo claro">${ic('sun')}</button><button data-th="dark" class="${th==='dark'?'on':''}" title="Modo oscuro">${ic('moon')}</button></div>
     <button class="hbtn" ${T} title="Notificaciones">${ic('bell')}<span class="dot"></span></button>
     <div class="split">
@@ -35,9 +34,8 @@ function header(){
 }
 
 /* ---------- rail ---------- */
-const RAIL=[
+const RAIL_OS=[
   ['os/resumen','house','Inicio'],
-  ['agentes/cobranza','sparkles','Agentes IA',3,'Agentes'],
   ['os/clientes','users','Clientes'],
   ['os/polizas','scroll-text','Pólizas'],
   ['os/recibos','receipt','Recibos y cobranza',0,'Cobranza'],
@@ -46,11 +44,12 @@ const RAIL=[
   '-',
   ['config','settings','Configuración',0,'Ajustes']
 ];
+function railAgents(){return [['agentes/asistente','sparkles','Asistente Handle',0,'Asistente'],...AGENTS.map(a=>['agentes/'+a.id,a.i,a.n,a.cnt,a.n.split(' ')[0]])]}
 function rail(h){
-  $('#rail').className='glass';
-  $('#rail').innerHTML=RAIL.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${(h===r[0]||(r[0].startsWith('agentes')&&h.startsWith('agentes'))||(r[0]==='config'&&h==='config'))?'on':''}">${ic(r[1])}${r[3]?`<span class="badge">${r[3]}</span>`:''}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
+  const items=h.startsWith('agentes')?railAgents():RAIL_OS;
+  $('#rail').className='glass lq'+(h.startsWith('agentes')?' ag-mode':'');
+  $('#rail').innerHTML=items.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}${r[3]?`<span class="badge">${r[3]}</span>`:''}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
 }
-
 /* ---------- helpers ---------- */
 function smooth(pts){let d=`M${pts[0][0]},${pts[0][1]}`;for(let i=0;i<pts.length-1;i++){const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];d+=` C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${p2[0]},${p2[1]}`}return d}
 function lineChart(){
@@ -75,7 +74,7 @@ const kpi=(icn,l,v,u,d,up,cmp)=>`<div class="card kpi"><div class="hd"><span cla
 
 /* ---------- OS ---------- */
 const OS_TABS=[['resumen','Resumen'],['clientes','Clientes'],['polizas','Pólizas'],['recibos','Recibos'],['comisiones','Comisiones'],['cotizaciones','Cotizaciones']];
-function stageHead(active){return `<div class="stage-hd"><div class="tabs-main"><a href="#/os/resumen" class="${active==='os'?'on':''}">${ic('layout-grid')} OS</a><a href="#/agentes/cobranza" class="${active==='ag'?'on':''}">${ic('sparkles')} Agentes IA <span class="n">8</span></a></div><span class="sp"></span><span style="color:var(--mut);font-size:12px">Sincronizado hace 2 min · 17 aseguradoras</span></div>`}
+function stageHead(active){return '';`<div class="stage-hd"><div class="tabs-main"><a href="#/os/resumen" class="${active==='os'?'on':''}">${ic('layout-grid')} OS</a><a href="#/agentes/cobranza" class="${active==='ag'?'on':''}">${ic('sparkles')} Agentes IA <span class="n">8</span></a></div><span class="sp"></span><span style="color:var(--mut);font-size:12px">Sincronizado hace 2 min · 17 aseguradoras</span></div>`}
 function osView(sec){
   let body='';
   if(sec==='resumen') body=`
@@ -116,7 +115,7 @@ function osView(sec){
     ['Póliza','Aseguradora','Agente','Tasa','Monto','IVA'],D.comisiones.slice(0,12).map(x=>`<tr><td class="m">${x.pol}</td><td>${x.ins.toUpperCase()}</td><td class="m">${x.ag}</td><td class="m">${x.tasa?x.tasa.toFixed(1)+'%':'—'}</td><td class="m">$${f(x.monto)}</td><td class="m">$${f(x.iva)}</td></tr>`).join(''));
   else if(sec==='cotizaciones') body=listView('Cotizaciones','195 solicitudes · 48 esperan tu respuesta · 120 cotizadas',['Requieren atención','En proceso','Cotizadas','Cerradas'],
     ['Solicitud','Ramo','Aseguradoras','Mejor precio','Estado'],D.cotizaciones.map((c,i)=>`<tr><td><b style="font-weight:600">${c.n}</b><br><span class="m" style="color:var(--mut)">${c.id}</span></td><td style="color:var(--mut)">${c.ramo}</td><td class="m">${c.c}</td><td class="m">${i%2?'—':'$'+f(32076+i*1200)}</td><td>${c.est.startsWith('REQ')||i===0?'<span class="pill" style="background:rgba(217,68,58,.13);color:var(--red)">Falta info del cliente</span>':c.est==='COTIZADO'?'<span class="pill" style="background:rgba(47,158,91,.14);color:var(--grn)">Lista para enviar</span>':'<span class="pill" style="background:rgba(74,108,247,.14);color:var(--blu)">Cotizando</span>'}</td></tr>`).join(''));
-  return stageHead('os')+`<div class="scroll">${body}</div><div class="dock glass">${OS_TABS.map(([k,t])=>`<a href="#/os/${k}" class="${sec===k?'on':''}">${t}</a>`).join('')}<a class="plus" href="#/agentes/asistente" title="Pedir algo a Handle">${ic('plus')}</a></div>`;
+  return stageHead('os')+`<div class="scroll">${body}</div>`;
 }
 function listView(t,s,chips,cols,rows){return `<div class="ttl"><div><h1>${t}</h1><p>${s}</p></div><span class="sp"></span><label class="search">${ic('search')}<input placeholder="Buscar o preguntar…"></label><a class="btn pri" href="#" ${T}>${ic('plus')} Nuevo</a></div>
   <div class="chips" style="margin-bottom:12px">${chips.map((c,i)=>`<span class="chip ${i?'':'on'}">${c}</span>`).join('')}</div>
@@ -194,10 +193,9 @@ function agView(id){
   const a=AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',i:'sparkles',bg:'rgba(122,92,255,.15)',c:'#6b4ff0',state:'Listo'};
   const cv=CONVOS[id]||{title:'Sin conversaciones',threads:['Nueva conversación'],body:`<div class="a-msg"><p>El agente <b>${a.n}</b> está al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
   return stageHead('ag')+`<div class="ag-wrap">
-    <div class="card ag-list"><div class="lbl">Agentes</div>
-      <div class="ag ${id==='asistente'?'on':''}" onclick="location.hash='#/agentes/asistente'"><span class="aic" style="background:rgba(122,92,255,.15);color:#6b4ff0">${ic('sparkles')}</span><span><b>Asistente Handle</b><span>Pregunta a tus registros</span></span></div>
-      ${AGENTS.map(x=>`<div class="ag ${x.id===id?'on':''}" onclick="location.hash='#/agentes/${x.id}'"><span class="aic" style="background:${x.bg};color:${x.c}">${ic(x.i)}</span><span><b>${x.n}</b><span>${x.state}</span></span>${x.cnt?`<span class="cnt">${x.cnt}</span>`:''}</div>`).join('')}
-      <div class="lbl" style="margin-top:8px">Conversaciones</div><div class="threads">${cv.threads.map((t,i)=>`<a class="thr ${i?'':'on'}" href="#" ${T}>${t}<small>${['Ahora','Ayer','Lun','15 jul'][i]||''}</small></a>`).join('')}</div>
+    <div class="card ag-list"><div class="agent-id"><span class="aic big" style="background:${a.bg};color:${a.c}">${ic(a.i)}</span><b>${a.n}</b><span><i class="live"></i> ${a.state}</span>${a.today?`<p>${a.today}</p>`:''}</div>
+      <a class="btn pri sm" style="justify-content:center;margin:4px 6px 6px" href="#" ${T}>${ic('plus')} Nueva conversación</a>
+      <div class="lbl" style="margin-top:6px">Conversaciones</div><div class="threads">${cv.threads.map((t,i)=>`<a class="thr ${i?'':'on'}" href="#" ${T}>${t}<small>${['Ahora','Ayer','Lun','15 jul'][i]||''}</small></a>`).join('')}</div>
     </div>
     <div class="card chat"><div class="chat-hd"><span class="aic" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:${a.bg};color:${a.c}">${ic(a.i)}</span><div><b>${cv.title}</b><br><span>${a.n} · ${a.state}</span></div><span class="sp"></span><a class="btn sm" href="#" ${T}>${ic('history')} Historial</a><a class="btn sm" href="#" ${T}>${ic('plus')} Nueva</a></div>
       <div class="chat-body" id="cb">${cv.body}</div>
@@ -225,6 +223,8 @@ function render(){
   header();rail(h);
   const st=$('#stage');st.className='glass';
   st.innerHTML=p[0]==='agentes'?agView(p[1]||'cobranza'):p[0]==='config'?cfgView():osView(p[1]||'resumen');
+  document.querySelectorAll('#mode a').forEach(x=>x.classList.toggle('on',(x.dataset.m==='ag')===(p[0]==='agentes')));
+  st.classList.remove('enter');void st.offsetWidth;st.classList.add('enter');
   if(window.lucide)lucide.createIcons();
   const cmp=$('#cmp');if(cmp)cmp.onsubmit=e=>{e.preventDefault();const ta=cmp.querySelector('textarea');if(!ta.value.trim())return;const cb=$('#cb');cb.insertAdjacentHTML('beforeend',`<div class="u-msg">${ta.value.replace(/</g,'&lt;')}</div><div class="a-msg">${step('loader','Pensando…','')}</div>`);ta.value='';cb.scrollTop=cb.scrollHeight;lucide.createIcons();setTimeout(()=>{cb.lastElementChild.innerHTML=step('database','Consulté tus registros','0.7s','sor_policy · sor_receipt')+'<p>Listo. En la versión real aquí respondo con datos de tu cartera y, si hace falta, le paso la tarea al agente correcto.</p>';lucide.createIcons();cb.scrollTop=cb.scrollHeight},1100)};
 }
@@ -235,3 +235,10 @@ document.addEventListener('click',e=>{
   const a=e.target.closest('[data-toast]');if(a){e.preventDefault();toast(a.dataset.toast)}
 });
 applyTheme();window.addEventListener('hashchange',render);render();
+
+/* ---------- motion: dock magnify on rail, cursor light on cards ---------- */
+document.addEventListener('mousemove',e=>{
+  const r=$('#rail');if(r&&innerWidth>820){const rb=r.getBoundingClientRect();const near=e.clientX<rb.right+60;r.querySelectorAll('a').forEach(a=>{const b=a.getBoundingClientRect();const d=Math.abs(e.clientY-(b.top+b.height/2));const sc=near?Math.max(1,1.45-d/110):1;a.style.transform=`scale(${sc.toFixed(3)}) translateX(${((sc-1)*14).toFixed(1)}px)`})}
+  const c=e.target.closest('.card,.lq');if(c){const b=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-b.left)+'px');c.style.setProperty('--my',(e.clientY-b.top)+'px')}
+});
+document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>a.style.transform='')});
