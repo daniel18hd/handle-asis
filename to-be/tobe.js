@@ -46,8 +46,8 @@ const RAIL_OS=[
 ];
 function railAgents(){return [['agentes/asistente','sparkles','Asistente Handle',0,'Asistente'],...AGENTS.map(a=>['agentes/'+a.id,a.i,a.n,a.cnt,a.n.split(' ')[0]])]}
 function rail(h){
-  const items=h.startsWith('agentes')?railAgents():RAIL_OS;
-  $('#rail').className='glass lq'+(h.startsWith('agentes')?' ag-mode':'');
+  const items=RAIL_OS;
+  $('#rail').className='glass lq';
   $('#rail').innerHTML=items.map(r=>r==='-'?'<span class="sep"></span>':`<a href="#/${r[0]}" class="${h===r[0]?'on':''}">${ic(r[1])}${r[3]?`<span class="badge">${r[3]}</span>`:''}<span class="tip">${r[2]}</span><span class="ml">${r[4]||r[2]}</span></a>`).join('');
 }
 /* ---------- helpers ---------- */
@@ -193,8 +193,14 @@ function agView(id){
   const a=AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',i:'sparkles',bg:'rgba(122,92,255,.15)',c:'#6b4ff0',state:'Listo'};
   const cv=CONVOS[id]||{title:'Sin conversaciones',threads:['Nueva conversación'],body:`<div class="a-msg"><p>El agente <b>${a.n}</b> está al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
   return stageHead('ag')+`<div class="ag-wrap">
-    <div class="card ag-list"><div class="agent-id"><span class="aic big" style="background:${a.bg};color:${a.c}">${ic(a.i)}</span><b>${a.n}</b><span><i class="live"></i> ${a.state}</span>${a.today?`<p>${a.today}</p>`:''}</div>
-      <a class="btn pri sm" style="justify-content:center;margin:4px 6px 6px" href="#" ${T}>${ic('plus')} Nueva conversación</a>
+    <div class="card ag-list">
+      <div class="ag-top"><a class="back" href="#/os/resumen" title="Volver">${ic('arrow-left')}</a><span class="brand"><span class="lg">${LOGO}</span>Agentes</span></div>
+      <a class="btn pri sm" style="justify-content:center;margin:2px 4px 6px" href="#" ${T}>${ic('plus')} Nueva conversación</a>
+      <div class="lbl">Agentes</div>
+      <div class="ags">
+      <div class="ag ${id==='asistente'?'on':''}" onclick="location.hash='#/agentes/asistente'"><span class="aic" style="background:rgba(122,92,255,.15);color:#6b4ff0">${ic('sparkles')}</span><span><b>Asistente Handle</b><span>Pregunta a tus registros</span></span></div>
+      ${AGENTS.map(x=>`<div class="ag ${x.id===id?'on':''}" onclick="location.hash='#/agentes/${x.id}'"><span class="aic" style="background:${x.bg};color:${x.c}">${ic(x.i)}</span><span><b>${x.n}</b><span>${x.state}</span></span>${x.cnt?`<span class="cnt">${x.cnt}</span>`:''}</div>`).join('')}
+      </div>
       <div class="lbl" style="margin-top:6px">Conversaciones</div><div class="threads">${cv.threads.map((t,i)=>`<a class="thr ${i?'':'on'}" href="#" ${T}>${t}<small>${['Ahora','Ayer','Lun','15 jul'][i]||''}</small></a>`).join('')}</div>
     </div>
     <div class="card chat"><div class="chat-hd"><span class="aic" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:${a.bg};color:${a.c}">${ic(a.i)}</span><div><b>${cv.title}</b><br><span>${a.n} · ${a.state}</span></div><span class="sp"></span><a class="btn sm" href="#" ${T}>${ic('history')} Historial</a><a class="btn sm" href="#" ${T}>${ic('plus')} Nueva</a></div>
@@ -220,7 +226,7 @@ function cfgView(){return stageHead('')+`<div class="scroll"><div class="ttl"><d
 /* ---------- router ---------- */
 function render(){
   const h=location.hash.replace(/^#\/?/,'')||'os/resumen';const p=h.split('/');
-  header();rail(h);
+  header();rail(h);document.body.classList.toggle('immersive',p[0]==='agentes');
   const st=$('#stage');st.className='glass';
   st.innerHTML=p[0]==='agentes'?agView(p[1]||'cobranza'):p[0]==='config'?cfgView():osView(p[1]||'resumen');
   document.querySelectorAll('#mode a').forEach(x=>x.classList.toggle('on',(x.dataset.m==='ag')===(p[0]==='agentes')));
@@ -238,7 +244,7 @@ applyTheme();window.addEventListener('hashchange',render);render();
 
 /* ---------- motion: dock magnify on rail, cursor light on cards ---------- */
 document.addEventListener('mousemove',e=>{
-  const r=$('#rail');if(r&&innerWidth>820){const rb=r.getBoundingClientRect();const near=e.clientX<rb.right+60;r.querySelectorAll('a').forEach(a=>{const b=a.getBoundingClientRect();const d=Math.abs(e.clientY-(b.top+b.height/2));const sc=near?Math.max(1,1.45-d/110):1;a.style.transform=`scale(${sc.toFixed(3)}) translateX(${((sc-1)*14).toFixed(1)}px)`})}
+  const r=$('#rail');if(r&&innerWidth>820&&!document.body.classList.contains('immersive')){const rb=r.getBoundingClientRect();const near=e.clientX<rb.right+40&&e.clientY>rb.top-40&&e.clientY<rb.bottom+40;r.querySelectorAll('a').forEach(a=>{const b=a.getBoundingClientRect();const d=Math.abs(e.clientY-(b.top+b.height/2));const sc=near?Math.max(1,1.32-d/120):1;const px=Math.round(40*sc);a.style.width=px+'px';a.style.height=px+'px'})}
   const c=e.target.closest('.card,.lq');if(c){const b=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-b.left)+'px');c.style.setProperty('--my',(e.clientY-b.top)+'px')}
 });
-document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>a.style.transform='')});
+document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>{a.style.width='';a.style.height=''})});
