@@ -101,6 +101,19 @@ const CONVOS={
     side:[['Acceso','Toda la cartera'],['Agentes disponibles','8']],pend:[]}
 };
 
+function liveMascot(sz){const L='#C8F07A';
+  return `<svg class="masc lm s-idle" width="${sz}" height="${sz}" viewBox="0 0 48 48" aria-hidden="true">
+  <g class="bod"><rect x="5" y="7" width="38" height="34" rx="17" fill="#1c1d20"/><ellipse cx="17" cy="13" rx="8" ry="3" fill="#fff" opacity=".08"/></g>
+  <g class="look">
+    <g class="e-open"><g class="eyes"><ellipse cx="18.5" cy="22" rx="2.7" ry="3.7" fill="${L}"/><ellipse cx="29.5" cy="22" rx="2.7" ry="3.7" fill="${L}"/><circle cx="19.4" cy="20.5" r=".95" fill="#fff" opacity=".9"/><circle cx="30.4" cy="20.5" r=".95" fill="#fff" opacity=".9"/></g></g>
+    <g class="e-wide"><ellipse cx="18.5" cy="21.5" rx="3.5" ry="4.6" fill="${L}"/><ellipse cx="29.5" cy="21.5" rx="3.5" ry="4.6" fill="${L}"/><circle cx="19.6" cy="19.8" r="1.2" fill="#fff"/><circle cx="30.6" cy="19.8" r="1.2" fill="#fff"/></g>
+  </g>
+  <g class="e-happy" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"><path d="M15.3 23.2q3.2-4.4 6.4 0"/><path d="M26.3 23.2q3.2-4.4 6.4 0"/></g>
+  <g class="e-wink"><ellipse cx="18.5" cy="22" rx="2.7" ry="3.7" fill="${L}"/><circle cx="19.4" cy="20.5" r=".95" fill="#fff" opacity=".9"/><path d="M26.3 22.6q3.2 2.6 6.4 0" fill="none" stroke="${L}" stroke-width="2.4" stroke-linecap="round"/></g>
+  <path class="m-smile" d="M20 29.5q4 3.6 8 0" fill="none" stroke="${L}" stroke-width="2" stroke-linecap="round"/>
+  <ellipse class="m-o" cx="24" cy="30.5" rx="1.9" ry="2.2" fill="${L}"/>
+  <ellipse class="ck" cx="13.5" cy="28.5" rx="2.6" ry="1.4" fill="#ff9d8a" opacity=".55"/><ellipse class="ck" cx="34.5" cy="28.5" rx="2.6" ry="1.4" fill="#ff9d8a" opacity=".55"/>
+  </svg>`}
 function mascot(id,sz=40){const m=MS[id]||MS.asistente;const e=m.e||'#141210';const dx=m.ex||0;
   return `<svg class="masc" width="${sz}" height="${sz}" viewBox="0 0 48 48" aria-hidden="true"><g class="body" fill="${m.c}">${m.s}</g>
   <g class="look"><g class="eyes"><ellipse cx="${19+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/><ellipse cx="${29+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/>
@@ -109,7 +122,7 @@ function mascot(id,sz=40){const m=MS[id]||MS.asistente;const e=m.e||'#141210';co
 
 /* ---------- tema ---------- */
 const getTheme=()=>{try{return localStorage.getItem('tb-th')||'light'}catch(e){return 'light'}};
-function syncTheme(){const th=getTheme();document.documentElement.classList.toggle('dark',th==='dark');$$('#theme button').forEach(b=>b.classList.toggle('on',b.dataset.th===th));$('#theme')?.classList.toggle('isd',th==='dark')}
+function syncTheme(){const th=getTheme();document.documentElement.classList.toggle('dark',th==='dark');$('#thbtn')?.classList.toggle('isd',th==='dark')}
 
 /* ---------- header (se construye una sola vez) ---------- */
 function header(){
@@ -117,11 +130,10 @@ function header(){
   $('#hdr').innerHTML=`
     <a class="brand" href="#/os/resumen">${HLOGO}</a><span class="sp"></span>
     <div class="hr">
-      <div class="theme" id="theme"><i class="thumb"></i><button data-th="light" title="Modo claro">${ic('sun')}</button><button data-th="dark" title="Modo oscuro">${ic('moon')}</button></div>
-      <button class="hbtn" ${T} title="Notificaciones">${ic('bell')}<span class="dot"></span></button>
-      <div class="split">
-        <a class="me" href="#" ${T} title="David Estrada · Admin"><span class="av">DE</span></a>
-        <button class="caret" id="caret" aria-label="Menú">${ic('chevron-down')}</button>
+      <button class="hic thb" id="thbtn" data-thtoggle title="Cambiar tema" aria-label="Cambiar tema"><span class="ti sun">${ic('sun')}</span><span class="ti moon">${ic('moon')}</span></button>
+      <button class="hic" ${T} title="Notificaciones" aria-label="Notificaciones">${ic('bell')}<span class="dot"></span></button>
+      <div class="prof">
+        <button class="avbtn" id="caret" aria-label="Perfil"><span class="av">DE</span></button>
         <div class="menu" id="menu"><div class="mhd"><span class="av">DE</span><div><b>David Estrada</b><small>Grupo Ejemplo · Admin</small></div></div><hr>
           <a href="#" ${T}>${ic('user')} Mi perfil</a><a href="#" ${T}>${ic('building-2')} Organización</a>
           <a href="#" ${T}>${ic('key-round')} Credenciales de aseguradoras</a><a href="#" ${T}>${ic('plug')} Integraciones</a>
@@ -138,7 +150,7 @@ function rail(){
   const withPend=AGENTS.filter(a=>a.cnt),working=AGENTS.filter(a=>a.state==='Trabajando').length;
   $('#rail').innerHTML=`
     <div class="rbox ag">
-      <a href="#/agentes" class="agbtn" aria-label="Agentes">${mascot('asistente',34)}<span class="badge">${withPend.length}</span><span class="ml">Agentes</span></a>
+      <a href="#/agentes" class="agbtn" aria-label="Agentes">${liveMascot(46)}<span class="badge">${withPend.length}</span><span class="ml">Agentes</span></a>
       <div class="agfly"><div class="fly glass">
         <div class="fh"><b>Tus agentes</b><span><i class="live"></i>${working} trabajando ahora</span></div>
         ${withPend.map(a=>`<a class="fl" href="#/agentes/${a.id}">${mascot(a.id,28)}<span class="tx"><b>${a.n}</b><small>${AG_PREV[a.id]}</small></span><i class="cnt">${a.cnt}</i></a>`).join('')}
@@ -291,13 +303,15 @@ function listView(t,s,chips,cols,rows){return `<div class="ttl"><div><h1>${t}</h
   <div class="card" style="padding:6px 12px"><table class="tbl"><thead><tr>${cols.map((c,i)=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`}
 
 /* ---------- Agentes ---------- */
+const REAL='asistente';
+const realTag=(sm)=>`<span class="real${sm?' sm':''}"><i></i>${sm?'Real':'Agente real · prueba'}</span>`;
 function agentOf(id){return AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',state:'Listo',today:''}}
 function chatHTML(id){
   const a=agentOf(id);
   const cv=CONVOS[id]||{title:'Sin conversaciones',body:`<div class="a-msg"><p>Estoy al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
   return `<section class="cx-chat" data-id="${id}">
-      <div class="cx-hd glass"><a class="back back-m" href="#/agentes" aria-label="Volver">${ic('chevron-left')}</a><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b><span class="st"><i class="live"></i>${a.state}</span><span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
-      <div class="cx-body" id="cb"><div class="cx-day">Hoy</div>${cv.body}</div>
+      <div class="cx-hd glass"><a class="back back-m" href="#/agentes" aria-label="Volver">${ic('chevron-left')}</a><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b>${id===REAL?realTag():`<span class="st"><i class="live"></i>${a.state}</span>`}<span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
+      <div class="cx-body" id="cb">${id===REAL?`<div class="real-note"><i></i><span><b>Este agente es real.</b> Responde con IA en vivo sobre la cartera de prueba de este demo.</span></div>`:''}<div class="cx-day">Hoy</div>${cv.body}</div>
       <form class="cx-comp glass" id="cmp"><button type="button" class="hbtn sm2">${ic('plus')}</button><textarea rows="1" placeholder="Escríbele a ${a.n}…"></textarea><button type="button" class="hbtn sm2">${ic('mic')}</button><button class="voice" title="Enviar">${ic('arrow-up')}</button></form>
       <div class="drawer glass" id="drawer"><div class="dh"><h3>Cómo trabaja</h3><span class="sp"></span><span class="toggle"></span></div>${cv.side.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}
         ${cv.pend.length?`<h3 style="margin-top:16px">Necesita tu aprobación</h3>${cv.pend.map(([k,v])=>`<div class="kv"><span style="color:var(--ink)">${k}</span><b style="color:var(--org)">${v}</b></div>`).join('')}`:''}
@@ -309,7 +323,7 @@ function agView(id){
   return `<div class="cx ${mList?'m-list':'m-chat'}">
     <aside class="cx-list">
       <div class="cx-top"><a class="back" href="#/os/resumen" title="Volver">${ic('arrow-left')}</a><b class="cx-title">Agentes</b><span class="sp"></span><button class="hbtn sm2" ${T}>${ic('search')}</button><button class="hbtn sm2" ${T}>${ic('plus')}</button></div>
-      <div class="cx-items">${list.map(x=>`<a class="cx-it ${x.id===id&&!mList?'on':''}" data-id="${x.id}" href="#/agentes/${x.id}">${mascot(x.id,42)}<span class="tx"><b>${x.n}</b><span>${AG_PREV[x.id]||''}</span></span>${x.cnt?`<i class="cnt">${x.cnt}</i>`:''}</a>`).join('')}</div>
+      <div class="cx-items">${list.map(x=>`<a class="cx-it ${x.id===id&&!mList?'on':''}" data-id="${x.id}" href="#/agentes/${x.id}">${mascot(x.id,42)}<span class="tx"><b>${x.n}${x.id===REAL?realTag(1):''}</b><span>${AG_PREV[x.id]||''}</span></span>${x.cnt?`<i class="cnt">${x.cnt}</i>`:''}</a>`).join('')}</div>
       <div class="cx-me"><span class="av">DE</span><span><b>David Estrada</b><small>Grupo Ejemplo</small></span><span class="sp"></span><a class="hbtn sm2" href="#/config">${ic('settings')}</a></div>
     </aside>${chatHTML(id)}</div>`;
 }
@@ -375,7 +389,7 @@ document.addEventListener('click',e=>{
   const pb=e.target.closest('[data-per]');if(pb){if(pb.dataset.per!==PER){PER=pb.dataset.per;$$('#per button').forEach(b=>b.classList.toggle('on',b===pb));segThumb();paintResumen(true)}return}
   if(e.target.closest('#adx')){$('#adock').classList.remove('open');return}
   const q=e.target.closest('[data-ask]');if(q){askDock(q.dataset.ask);return}
-  const t=e.target.closest('[data-th]');if(t){try{localStorage.setItem('tb-th',t.dataset.th)}catch(_){}syncTheme();return}
+  if(e.target.closest('[data-thtoggle]')){const nx=getTheme()==='dark'?'light':'dark';try{localStorage.setItem('tb-th',nx)}catch(_){}const b=$('#thbtn');b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');syncTheme();return}
   if(e.target.closest('#caret')){$('#menu').classList.toggle('on');return}
   if(!e.target.closest('#menu'))$('#menu')?.classList.remove('on');
   if(!e.target.closest('#adock')&&$('#adock')?.classList.contains('open')&&!$('#adi').value)$('#adock').classList.remove('open');
@@ -396,6 +410,13 @@ document.addEventListener('pointermove',e=>{MX=e.clientX;MY=e.clientY;
 window.addEventListener('resize',()=>segThumb());
 /* compactación continua (interpolada) */
 (function loop(){CK=CK<0?TK:CK+(TK-CK)*.16;if(Math.abs(TK-CK)<.0005)CK=TK;const v=CK.toFixed(4);if(v!==loop.v){document.documentElement.style.setProperty('--k',v);loop.v=v}requestAnimationFrame(loop)})();
+
+/* expresiones del agente en el side */
+const MOODS=['s-idle','s-happy','s-idle','s-wink','s-idle','s-wow','s-idle','s-happy','s-look'];let MI=0,HOV=false;
+function mood(m){const el=$('.agbtn .lm');if(!el||el.classList.contains(m))return;el.setAttribute('class','masc lm '+m);el.querySelector('.bod').animate([{transform:'translateY(0) scale(1)'},{transform:'translateY(-1.5px) scale(1.04,0.97)'},{transform:'none'}],{duration:420,easing:'cubic-bezier(.34,1.45,.64,1)'})}
+setInterval(()=>{if(HOV||document.hidden)return;MI=(MI+1)%MOODS.length;mood(MOODS[MI])},2300);
+document.addEventListener('pointerover',e=>{const a=e.target.closest&&e.target.closest('.rbox.ag');if(a&&!HOV){HOV=true;mood('s-happy')}});
+document.addEventListener('pointerout',e=>{const a=e.target.closest&&e.target.closest('.rbox.ag');if(a&&!a.contains(e.relatedTarget)){HOV=false;mood('s-idle')}});
 
 /* ---------- arranque ---------- */
 header();rail();document.body.insertAdjacentHTML('beforeend',assistDock());icons();
