@@ -22,6 +22,38 @@ const CI={
 // Handle intelligence mark: los dos trazos de Handle + nodo de luz
 const AIMARK=`<svg class="aimark" viewBox="0 0 40 40"><defs><linearGradient id="am" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E0FEA2"/><stop offset="1" stop-color="#9FD86B"/></linearGradient></defs><path d="M11 29 18.5 11M21.5 29 29 11" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" fill="none"/><circle class="node" cx="29" cy="11" r="3.4" fill="url(#am)"/><circle class="ring" cx="29" cy="11" r="3.4" fill="none" stroke="#C9F08A" stroke-width="1.2"/></svg>`;
 
+
+/* ---------- brand: logo real de Handle (máscara, toma el color del tema) ---------- */
+const HLOGO=`<span class="hlogo" aria-label="Handle"><i class="mk"></i><i class="wd"></i></span>`;
+const HMARK=`<i class="hmk"></i>`;
+
+/* ---------- mascotas de agentes: formas propias, mismo lenguaje (ojos ovalados + brillo) ---------- */
+const MS={
+  asistente:{c:'#1c1d20',e:'#C8F07A',s:'<rect x="6" y="8" width="36" height="32" rx="16"/>'},
+  cobranza:{c:'#C8F07A',s:'<rect x="7" y="7" width="34" height="34" rx="12" transform="rotate(-8 24 24)"/>'},
+  pagos:{c:'#8FE3C2',s:'<path d="M24 5c7 3 12 3.5 16 4v13c0 10-7 17-16 21C15 39 8 32 8 22V9c4-.5 9-1 16-4Z"/>'},
+  cotizacion:{c:'#A9B8FF',s:'<path d="M24 5c9 0 18 9 18 20s-8 17-18 17S6 36 6 25 15 5 24 5Z"/>'},
+  conciliador:{c:'#FFCB6B',s:'<circle cx="18" cy="26" r="13" opacity=".55"/><circle cx="29" cy="22" r="14"/>',ex:5},
+  siniestros:{c:'#FF9D8A',s:'<path d="M24 42S6 31 6 18.5C6 12 11 7 17 7c3.5 0 5.6 1.6 7 4 1.4-2.4 3.5-4 7-4 6 0 11 5 11 11.5C42 31 24 42 24 42Z"/>'},
+  extractor:{c:'#D4D6DB',s:'<rect x="4" y="12" width="40" height="24" rx="12"/>'},
+  kyc:{c:'#E9DAB6',s:'<path d="M24 4l17 10v20L24 44 7 34V14Z"/>'},
+  feedback:{c:'#CDBBFF',s:'<path d="M10 8h28a6 6 0 0 1 6 6v15a6 6 0 0 1-6 6H22l-9 8v-8h-3a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6Z"/>'}
+};
+function mascot(id,sz=40){const m=MS[id]||MS.asistente;const e=m.e||'#141210';const dx=m.ex||0;
+  return `<svg class="masc" width="${sz}" height="${sz}" viewBox="0 0 48 48"><g fill="${m.c}">${m.s}</g>
+  <g class="eyes"><ellipse cx="${19+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/><ellipse cx="${29+dx}" cy="22" rx="2.6" ry="3.6" fill="${e}"/>
+  <circle cx="${19.8+dx}" cy="20.6" r=".9" fill="#fff" opacity=".85"/><circle cx="${29.8+dx}" cy="20.6" r=".9" fill="#fff" opacity=".85"/></g>
+  <ellipse cx="${15+dx}" cy="28" rx="2.4" ry="1.3" fill="#fff" opacity=".35"/><ellipse cx="${33+dx}" cy="28" rx="2.4" ry="1.3" fill="#fff" opacity=".35"/></svg>`}
+const AG_PREV={asistente:'Pregúntame lo que sea de tu cartera.',cobranza:'Vamos bien: $412K de $753K ya pagados o prometidos.',pagos:'Confirmé 39 pagos. 3 no cuadran.',cotizacion:'Tengo 212 renovaciones listas para enviar.',conciliador:'Me falta el archivo de comisiones de marzo.',siniestros:'3 reportes médicos vencidos en AXA.',extractor:'Actualicé 50 pólizas desde portales.',kyc:'Sin pendientes por ahora.',feedback:'4 clientes respondieron la encuesta.'};
+
+/* iconos de pendientes */
+Object.assign(CI,{
+  renov:SV(`<path d="M5 12a7 7 0 0 1 12-4.9L19 9" /><path d="M19 4.5V9h-4.5"/><path d="M19 12a7 7 0 0 1-12 4.9L5 15"/><path d="M5 19.5V15h4.5"/><rect x="9.5" y="9.5" width="5" height="5" rx="1.2" fill="currentColor" fill-opacity=".18"/>`),
+  cotiz:SV(`<path d="M6.5 3.5h7.5l4 4v12.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5Z" fill="currentColor" fill-opacity=".14"/><path d="M14 3.5v4h4"/><path d="M10.2 11.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/>`),
+  pagodif:SV(`<rect x="3.5" y="6.5" width="17" height="11" rx="2.5" fill="currentColor" fill-opacity=".14"/><path d="M3.5 10h17"/><path d="M9 14.5h2.2M14.6 13.4l-2 2.6"/><path d="M13 13.6h3M13 15.8h3"/>`),
+  llave:SV(`<circle cx="8" cy="14" r="4" fill="currentColor" fill-opacity=".14"/><path d="M11 11.5 17 5.5M15 7.5l2 2M17.5 5l1.5 1.5"/><path d="M15.5 15.5l3 3M18.5 15.5l-3 3"/>`)
+});
+
 /* ---------- theme ---------- */
 const getTheme=()=>localStorage.getItem('tb-th')||'light';
 function applyTheme(){document.documentElement.classList.toggle('dark',getTheme()==='dark')}
@@ -31,9 +63,8 @@ function header(){
   const th=getTheme();
   $('#hdr').className='glass lq sweep';
   $('#hdr').innerHTML=`
-    <a class="brand" href="#/os/resumen"><span class="lg">${LOGO}</span><span>Handle<small>Hola, David</small></span></a>
+    <a class="brand" href="#/os/resumen">${HLOGO}</a>
     <nav class="mode" id="mode"><span class="pill-bg"></span><a href="#/os/resumen" data-m="os">${ic('layout-grid')}<span>OS</span></a><a href="#/agentes/asistente" data-m="ag">${ic('sparkles')}<span>Agentes IA</span><i class="n">3</i></a></nav>
-    <button class="hbtn srch" onclick="location.hash='#/agentes/asistente'" title="Buscar o preguntar (⌘K)">${ic('search')}<span>Buscar o preguntar</span><span class="kbd">⌘K</span></button>
     <div class="theme"><button data-th="light" class="${th==='light'?'on':''}" title="Modo claro">${ic('sun')}</button><button data-th="dark" class="${th==='dark'?'on':''}" title="Modo oscuro">${ic('moon')}</button></div>
     <button class="hbtn" ${T} title="Notificaciones">${ic('bell')}<span class="dot"></span></button>
     <div class="split">
@@ -75,12 +106,12 @@ function lineChart(){
   const grid=[0,25,50,75,100].map(v=>`<line x1="${pad}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" opacity=".08"/><text x="0" y="${y(v)+3}">${v?('$'+v+'M'):'0'}</text>`).join('');
   const lbl=['1 jul','4','7','10','13','16','19','22','25','28','30','31'].map((t,i)=>i%2?'':`<text x="${x(i)-10}" y="${H-4}">${i?t+' jul':t}</text>`).join('');
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" style="color:var(--ink)">
-    <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8683f" stop-opacity=".28"/><stop offset="1" stop-color="#e8683f" stop-opacity="0"/></linearGradient></defs>
+    <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A6DC5A" stop-opacity=".38"/><stop offset="1" stop-color="#A6DC5A" stop-opacity="0"/></linearGradient></defs>
     ${grid}${lbl}
     <path d="${smooth(pe)} L${x(em.length-1)},${H-24} L${pad},${H-24} Z" fill="url(#ga)"/>
-    <path d="${smooth(pe)}" fill="none" stroke="#e8683f" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="${smooth(pe)}" fill="none" stroke="#7DBA34" stroke-width="2.6" stroke-linecap="round"/>
     <path d="${smooth(pc)}" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
-    <circle cx="${x(7)}" cy="${y(80)}" r="5" fill="#e8683f" stroke="#fff" stroke-width="2"/>
+    <circle cx="${x(7)}" cy="${y(80)}" r="5" fill="#7DBA34" stroke="#fff" stroke-width="2"/>
     <g transform="translate(${x(7)-58},${y(80)-46})"><rect width="116" height="34" rx="10" fill="rgba(255,255,255,.85)"/><text x="10" y="14" style="fill:#6f665d">22 jul · emitida</text><text x="10" y="27" style="fill:#141210;font-weight:600">$80.2M · cobrada $55M</text></g>
   </svg>`;
 }
@@ -96,7 +127,7 @@ function osView(sec){
   if(sec==='resumen') body=`
     <div class="ttl"><div><h1>Tu cartera, hoy</h1><p>Lo que entra, lo que falta cobrar y lo que tus agentes ya resolvieron.</p></div><span class="sp"></span>
       <div class="seg"><button>Semana</button><button class="on">Mes</button><button>Año</button></div><a class="btn pri" href="#" ${T}>${ic('download')} Exportar</a></div>
-    <div class="card brief"><span class="spark">${AIMARK}</span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
+    <div class="card brief"><span class="spark">${HMARK}</span><p><b>En una línea:</b> vendiste 8% más que en junio, pero solo has cobrado <b>1 de cada 3 pesos</b> emitidos. Lo urgente hoy son <b>$2.36M vencidos</b>; tus agentes ya están trabajando 59 de esos casos.</p><a class="btn sm" href="#/agentes/asistente">Preguntar ${ic('arrow-right')}</a></div>
     <div class="grid k4">
       ${story('vendiste','Vendiste','$968.4','M','8%',1,'vs junio','5,528 pólizas activas · 674 renuevan este mes',null)}
       ${story('cobraste','Cobraste','$43.4','M','12%',1,'vs junio','Falta cobrar $29.1M de lo emitido',33)}
@@ -104,21 +135,21 @@ function osView(sec){
       ${story('riesgo','En riesgo','$2.36','M','4%',0,'más que junio','360 recibos vencidos · 280 pólizas canceladas',null,1)}
     </div>
     <div class="grid row2">
-      <div class="card"><div style="display:flex;align-items:flex-start"><div><h3>Prima emitida vs cobrada</h3><div class="sub">Pasa el cursor para comparar cualquier día.</div></div><span class="sp"></span><div class="legend"><span><i class="dot" style="background:#e8683f"></i>Emitida</span><span><i class="dot" style="background:var(--ink)"></i>Cobrada</span></div></div>${lineChart()}</div>
-      <div class="card"><h3>Prima por aseguradora</h3><div style="display:flex;justify-content:center;margin:8px 0 2px">${donut([[.35,'#e8683f'],[.26,'var(--ink)'],[.2,'#f2b93b'],[.13,'#4a6cf7'],[.06,'#2f9e5b']],'$968M','Prima neta')}</div>
-        ${[['GNP','#e8683f',35],['Qualitas','var(--ink)',26],['Chubb','#f2b93b',20],['AXA','#4a6cf7',13],['Otras (12)','#2f9e5b',6]].map(([n,c,p])=>`<div class="cat"><span><i class="dot" style="background:${c}"></i> ${n}</span><span class="tr"><i style="width:${p*2.6}%;background:${c}"></i></span><b>${p}%</b></div>`).join('')}</div>
+      <div class="card"><div style="display:flex;align-items:flex-start"><div><h3>Prima emitida vs cobrada</h3><div class="sub">Pasa el cursor para comparar cualquier día.</div></div><span class="sp"></span><div class="legend"><span><i class="dot" style="background:#7DBA34"></i>Emitida</span><span><i class="dot" style="background:var(--ink)"></i>Cobrada</span></div></div>${lineChart()}</div>
+      <div class="card"><h3>Prima por aseguradora</h3><div style="display:flex;justify-content:center;margin:8px 0 2px">${donut([[.35,'var(--p1)'],[.26,'var(--p2)'],[.2,'var(--p3)'],[.13,'var(--p4)'],[.06,'var(--p5)']],'$968M','Prima neta')}</div>
+        ${[['GNP','var(--p1)',35],['Qualitas','var(--p2)',26],['Chubb','var(--p3)',20],['AXA','var(--p4)',13],['Otras (12)','var(--p5)',6]].map(([n,c,p])=>`<div class="cat"><span><i class="dot" style="background:${c}"></i> ${n}</span><span class="tr"><i style="width:${p*2.6}%;background:${c}"></i></span><b>${p}%</b></div>`).join('')}</div>
     </div>
     <div class="grid row3">
       <div class="card"><div style="display:flex;align-items:center"><h3>Necesita tu atención</h3><span class="sp"></span><span class="pill" style="background:rgba(232,104,63,.15);color:var(--org)">5 pendientes</span></div><div class="sub" style="margin-bottom:6px">Ordenado por dinero en juego. Cada uno abre al agente responsable.</div>
-        ${[['alarm-clock','rgba(217,68,58,.14)','var(--red)','360 recibos vencidos · $2.36M','El agente de cobranza ya contactó 59; 7 piden a un humano','agentes/cobranza','Revisar 7'],
-           ['refresh-cw','rgba(74,108,247,.14)','var(--blu)','674 pólizas renuevan en julio','Ya hay 212 cotizaciones de renovación listas para enviar','agentes/cotizacion','Aprobar envío'],
-           ['file-text','rgba(242,185,59,.18)','#b7861c','48 cotizaciones esperan respuesta','Faltan datos del cliente en 31; el agente redactó las preguntas','agentes/cotizacion','Ver preguntas'],
-           ['shield-check','rgba(47,158,91,.14)','var(--grn)','3 pagos con diferencia de monto','Validador encontró pago parcial en GNP y Chubb','agentes/pagos','Validar'],
-           ['key-round','rgba(20,18,16,.08)','var(--ink2)','10 accesos a portales fallando','Bloquea la conciliación de AXA, Banorte y Chubb','config','Reconectar']]
-          .map(([i,bg,c,t,s,h,cta])=>`<a class="act" href="#/${h}"><span class="ai" style="background:${bg};color:${c}">${ic(i)}</span><span><b>${t}</b><span>${s}</span></span><span class="go btn sm">${cta}</span></a>`).join('')}
+        ${[['riesgo','t-riesgo','360 recibos vencidos · $2.36M','El agente de cobranza ya contactó 59; 7 piden a un humano','agentes/cobranza','Revisar 7'],
+           ['renov','t-cobraste','674 pólizas renuevan en julio','Ya hay 212 cotizaciones de renovación listas para enviar','agentes/cotizacion','Aprobar envío'],
+           ['cotiz','t-ganaste','48 cotizaciones esperan respuesta','Faltan datos del cliente en 31; el agente redactó las preguntas','agentes/cotizacion','Ver preguntas'],
+           ['pagodif','t-vendiste','3 pagos con diferencia de monto','Validador encontró pago parcial en GNP y Chubb','agentes/pagos','Validar'],
+           ['llave','t-neutral','10 accesos a portales fallando','Bloquea la conciliación de AXA, Banorte y Chubb','config','Reconectar']]
+          .map(([i,t,ti,su,h,cta])=>`<a class="act ${t}" href="#/${h}"><span class="ai ci-wrap">${CI[i]}</span><span><b>${ti}</b><span>${su}</span></span><span class="go btn sm">${cta}</span></a>`).join('')}
       </div>
       <div class="card"><div style="display:flex;align-items:center"><h3>Tus agentes hoy</h3><span class="sp"></span><a class="btn sm" href="#/agentes/cobranza">Abrir agentes ${ic('arrow-right')}</a></div><div class="sub" style="margin-bottom:6px">Trabajo hecho por la IA desde las 7:00 am.</div>
-        ${AGENTS.slice(0,6).map(a=>`<a class="agentline" href="#/agentes/${a.id}"><span class="ag aic" style="padding:0"><span class="aic" style="background:${a.bg};color:${a.c};width:30px;height:30px;border-radius:10px;display:grid;place-items:center">${ic(a.i)}</span></span><span><b style="font-weight:600">${a.n}</b><br><span style="color:var(--mut);font-size:11.5px">${a.today}</span></span><span class="st"><i class="live"></i>${a.state}</span></a>`).join('')}
+        ${AGENTS.slice(0,6).map(a=>`<a class="agentline" href="#/agentes/${a.id}">${mascot(a.id,36)}<span><b style="font-weight:600">${a.n}</b><br><span style="color:var(--mut);font-size:11.5px">${a.today}</span></span><span class="st"><i class="live"></i>${a.state}</span></a>`).join('')}
       </div>
     </div>`;
   else if(sec==='clientes') body=listView('Clientes','6,056 clientes · 2,241 con póliza activa · $16.2M en cartera',['Todos','Con vencidos','Renuevan este mes','Personas morales'],
@@ -206,29 +237,31 @@ const CONVOS={
     side:[['Acceso','Toda la cartera'],['Agentes disponibles','8']],pend:[]}
 };
 function agView(id){
-  const a=AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',i:'sparkles',bg:'rgba(122,92,255,.15)',c:'#6b4ff0',state:'Listo'};
-  const cv=CONVOS[id]||{title:'Sin conversaciones',threads:['Nueva conversación'],body:`<div class="a-msg"><p>El agente <b>${a.n}</b> está al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
-  return stageHead('ag')+`<div class="ag-wrap">
-    <div class="card ag-list">
-      <div class="ag-top"><a class="back" href="#/os/resumen" title="Volver">${ic('arrow-left')}</a><span class="brand"><span class="lg">${LOGO}</span>Agentes</span></div>
-      <a class="btn pri sm" style="justify-content:center;margin:2px 4px 6px" href="#" ${T}>${ic('plus')} Nueva conversación</a>
-      <div class="lbl">Agentes</div>
-      <div class="ags">
-      <div class="ag ${id==='asistente'?'on':''}" onclick="location.hash='#/agentes/asistente'"><span class="aic" style="background:rgba(122,92,255,.15);color:#6b4ff0">${ic('sparkles')}</span><span><b>Asistente Handle</b><span>Pregunta a tus registros</span></span></div>
-      ${AGENTS.map(x=>`<div class="ag ${x.id===id?'on':''}" onclick="location.hash='#/agentes/${x.id}'"><span class="aic" style="background:${x.bg};color:${x.c}">${ic(x.i)}</span><span><b>${x.n}</b><span>${x.state}</span></span>${x.cnt?`<span class="cnt">${x.cnt}</span>`:''}</div>`).join('')}
-      </div>
-      <div class="lbl" style="margin-top:6px">Conversaciones</div><div class="threads">${cv.threads.map((t,i)=>`<a class="thr ${i?'':'on'}" href="#" ${T}>${t}<small>${['Ahora','Ayer','Lun','15 jul'][i]||''}</small></a>`).join('')}</div>
-    </div>
-    <div class="card chat"><div class="chat-hd"><span class="aic" style="width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:${a.bg};color:${a.c}">${ic(a.i)}</span><div><b>${cv.title}</b><br><span>${a.n} · ${a.state}</span></div><span class="sp"></span><a class="btn sm" href="#" ${T}>${ic('history')} Historial</a><a class="btn sm" href="#" ${T}>${ic('plus')} Nueva</a></div>
-      <div class="chat-body" id="cb">${cv.body}</div>
-      <form class="composer" id="cmp"><div class="ctx"><span>${ic('at-sign')} ${a.n}</span><span>${ic('calendar')} Julio 2026</span><span>${ic('plus')} Contexto</span></div>
-        <textarea placeholder="Pídele algo a ${a.n.toLowerCase()}… (@ para contexto, / para acciones)"></textarea>
-        <div class="bar2"><span class="md">${ic('infinity')} Agente ${ic('chevron-down')}</span><span class="md">${ic('cpu')} handle-1 ${ic('chevron-down')}</span><span class="md">${ic('paperclip')}</span><button class="send">${ic('arrow-up')}</button></div></form>
-    </div>
-    <div class="side"><div class="card"><div style="display:flex;align-items:center"><h3>Cómo trabaja</h3><span class="sp"></span><span class="toggle" title="Activo"></span></div><div style="margin-top:10px">${cv.side.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}</div><a class="btn sm" style="margin-top:12px" href="#" ${T}>${ic('sliders-horizontal')} Ajustar en lenguaje natural</a></div>
-      ${cv.pend.length?`<div class="card"><h3>Necesita tu aprobación</h3><div style="margin-top:8px">${cv.pend.map(([k,v])=>`<div class="kv"><span style="color:var(--ink)">${k}</span><b style="color:var(--org)">${v}</b></div>`).join('')}</div></div>`:''}
-    </div></div>`;
+  const a=AGENTS.find(x=>x.id===id)||{id:'asistente',n:'Asistente Handle',state:'Listo',today:''};
+  const cv=CONVOS[id]||{title:'Sin conversaciones',threads:['Nueva conversación'],body:`<div class="a-msg"><p>Estoy al día. ${a.today}.</p></div>`,side:[['Estado',a.state]],pend:[]};
+  const list=[{id:'asistente',n:'Asistente Handle',cnt:0},...AGENTS];
+  return `<div class="cx">
+    <aside class="cx-list card no-lift">
+      <div class="cx-top"><a class="back" href="#/os/resumen" title="Volver">${ic('arrow-left')}</a><span class="sp"></span><button class="hbtn sm2" ${T}>${ic('search')}</button><button class="hbtn sm2" ${T}>${ic('plus')}</button></div>
+      <div class="cx-items">${list.map(x=>`<a class="cx-it ${x.id===id?'on':''}" href="#/agentes/${x.id}">${mascot(x.id,42)}<span class="tx"><b>${x.n}</b><span>${AG_PREV[x.id]||''}</span></span>${x.cnt?`<i class="cnt">${x.cnt}</i>`:''}</a>`).join('')}</div>
+      <div class="cx-me"><span class="av">DE</span><span><b>David Estrada</b><small>Grupo Ejemplo</small></span><span class="sp"></span><a class="hbtn sm2" href="#/config">${ic('settings')}</a></div>
+    </aside>
+    <section class="cx-chat">
+      <div class="cx-hd glass"><span class="mini">${mascot(a.id,26)}</span><b>${a.n}</b><span class="st"><i class="live"></i>${a.state}</span><span class="sp"></span><button class="hbtn sm2" id="infoBtn" title="Cómo trabaja">${ic('sliders-horizontal')}</button></div>
+      <div class="cx-body" id="cb"><div class="cx-day">Hoy</div>${cv.body}</div>
+      <form class="cx-comp glass" id="cmp"><button type="button" class="hbtn sm2">${ic('plus')}</button><textarea rows="1" placeholder="Escríbele a ${a.n}…"></textarea><button type="button" class="hbtn sm2">${ic('mic')}</button><button class="voice" title="Enviar">${ic('arrow-up')}</button></form>
+      <div class="drawer glass" id="drawer"><div style="display:flex;align-items:center;margin-bottom:8px"><h3>Cómo trabaja</h3><span class="sp"></span><span class="toggle"></span></div>${cv.side.map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join('')}
+        ${cv.pend.length?`<h3 style="margin-top:16px">Necesita tu aprobación</h3>${cv.pend.map(([k,v])=>`<div class="kv"><span style="color:var(--ink)">${k}</span><b style="color:var(--org)">${v}</b></div>`).join('')}`:''}
+        <a class="btn sm" style="margin-top:12px" href="#" ${T}>${ic('sliders-horizontal')} Ajustar en lenguaje natural</a></div>
+    </section></div>`;
 }
+
+/* ---------- asistente flotante ---------- */
+function assistDock(){return `<div class="adock glass" id="adock"><div class="ad-panel" id="adp">
+    <div class="ad-hd">${mascot('asistente',30)}<div><b>Asistente Handle</b><small>Pregunta a tus pólizas, recibos y comisiones</small></div><span class="sp"></span><button class="hbtn sm2" id="adx">${ic('x')}</button></div>
+    <div class="ad-body" id="adb"><div class="a-msg"><p>Hola, David. ¿Qué quieres saber hoy?</p></div><div class="chips">${['¿Quién no ha pagado esta semana?','Renovaciones de agosto','Comisiones por aseguradora'].map(c=>`<button class="chip" data-ask="${c}">${c}</button>`).join('')}</div></div></div>
+  <form class="ad-bar" id="adf">${mascot('asistente',30)}<input id="adi" placeholder="Pregúntale a Handle…" autocomplete="off"><button type="button" class="hbtn sm2">${ic('mic')}</button><button class="voice">${ic('arrow-up')}</button></form></div>`}
+function askDock(q){const b=$('#adb');$('#adock').classList.add('open');b.insertAdjacentHTML('beforeend',`<div class="u-msg">${q.replace(/</g,'&lt;')}</div><div class="a-msg"><p class="typing"><i></i><i></i><i></i></p></div>`);b.scrollTop=b.scrollHeight;setTimeout(()=>{b.lastElementChild.innerHTML='<p>Esta semana vencen <b>93 recibos por $753K</b>. 55% ya está pagado o prometido; los 7 que piden a un humano están en Cobranza.</p><a class="btn sm" href="#/agentes/cobranza">Abrir en Cobranza →</a>';b.scrollTop=b.scrollHeight},900)}
 
 /* ---------- config ---------- */
 function cfgView(){return stageHead('')+`<div class="scroll"><div class="ttl"><div><h1>Configuración</h1><p>Lo que tus agentes necesitan para trabajar, en un solo lugar.</p></div></div>
@@ -247,10 +280,15 @@ function render(){
   st.innerHTML=p[0]==='agentes'?agView(p[1]||'cobranza'):p[0]==='config'?cfgView():osView(p[1]||'resumen');
   document.querySelectorAll('#mode a').forEach(x=>x.classList.toggle('on',(x.dataset.m==='ag')===(p[0]==='agentes')));
   st.classList.remove('enter');void st.offsetWidth;st.classList.add('enter');
+  if(!$('#adock'))document.body.insertAdjacentHTML('beforeend',assistDock());
+  $('#infoBtn')&&($('#infoBtn').onclick=()=>$('#drawer').classList.toggle('on'));
   if(window.lucide)lucide.createIcons();
   const cmp=$('#cmp');if(cmp)cmp.onsubmit=e=>{e.preventDefault();const ta=cmp.querySelector('textarea');if(!ta.value.trim())return;const cb=$('#cb');cb.insertAdjacentHTML('beforeend',`<div class="u-msg">${ta.value.replace(/</g,'&lt;')}</div><div class="a-msg">${step('loader','Pensando…','')}</div>`);ta.value='';cb.scrollTop=cb.scrollHeight;lucide.createIcons();setTimeout(()=>{cb.lastElementChild.innerHTML=step('database','Consulté tus registros','0.7s','sor_policy · sor_receipt')+'<p>Listo. En la versión real aquí respondo con datos de tu cartera y, si hace falta, le paso la tarea al agente correcto.</p>';lucide.createIcons();cb.scrollTop=cb.scrollHeight},1100)};
 }
 document.addEventListener('click',e=>{
+  if(e.target.closest('#adx')){$('#adock').classList.remove('open');return}
+  const q=e.target.closest('[data-ask]');if(q){askDock(q.dataset.ask);return}
+  if(e.target.closest('#adi'))$('#adock').classList.add('open');
   const t=e.target.closest('[data-th]');if(t){localStorage.setItem('tb-th',t.dataset.th);applyTheme();header();lucide.createIcons();return}
   if(e.target.closest('#caret')){$('#menu').classList.toggle('on');return}
   if(!e.target.closest('#menu'))$('#menu')?.classList.remove('on');
@@ -264,3 +302,5 @@ document.addEventListener('mousemove',e=>{
   const c=e.target.closest('.card,.lq');if(c){const b=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-b.left)+'px');c.style.setProperty('--my',(e.clientY-b.top)+'px')}
 });
 document.addEventListener('mouseleave',()=>{document.querySelectorAll('#rail a').forEach(a=>{a.style.width='';a.style.height=''})});
+
+document.addEventListener('submit',e=>{if(e.target.id==='adf'){e.preventDefault();const i=$('#adi');if(i.value.trim()){askDock(i.value);i.value=''}}});
