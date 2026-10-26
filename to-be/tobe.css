@@ -516,3 +516,5 @@ body.immersive #adock{opacity:0;pointer-events:none;transform:translate(-50%,40p
   .cx-comp{left:8px;right:8px}
   .drawer{width:auto;left:10px}
 }
+#hdr .theme{margin-left:auto}
+html.dark .masc g:first-child[fill="#1c1d20"]{fill:#2a2c31}
