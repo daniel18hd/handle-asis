@@ -580,3 +580,5 @@ html.dark .rbox.ag a.mas.on{background:rgba(255,255,255,.14)}
   .rbox .sep{margin:2px 0}
   body.immersive #rail{transform:translateX(-110px)!important}
 }
+@media (max-width:820px){#hdr .brand .hlogo{display:inline-flex!important}#hdr .hlogo .wd{width:64px;height:15px}#hdr .hlogo .mk{width:22px;height:18px}}
+.rbox.ag a.mas svg{width:30px!important;height:30px!important}
