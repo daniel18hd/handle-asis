@@ -269,7 +269,7 @@ html.dark .search{background:rgba(255,255,255,.06);border-color:rgba(255,255,255
 .chip{padding:6px 12px;border-radius:16px;font-size:12px;background:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.6);color:var(--ink2);transition:background .2s,transform .3s var(--spring)}
 html.dark .chip{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)}
 .chip:hover{transform:translateY(-1px)}
-.chip.on{background:var(--ink);color:var(--bgD);border-color:transparent}
+.chip.on,html.dark .chip.on{background:var(--ink);color:var(--bgD);border-color:transparent}
 .kv{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:7px 0;border-top:1px solid var(--line2)}
 .kv:first-of-type{border-top:0}.kv span{color:var(--mut)}.kv b{font-weight:600}
 .toggle{width:34px;height:20px;border-radius:12px;background:var(--grn);position:relative;flex:none}
