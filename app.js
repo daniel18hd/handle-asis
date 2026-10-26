@@ -127,8 +127,7 @@ function chatAnswer() {
 V.inicio = () => page(`
   <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px"><div><h1>Hola, David</h1><div class="mono" style="color:var(--mut);font-size:11px">7 de julio de 2026</div></div><span class="sp"></span>${dd('', 'Todas las aseguradoras')}${dd('', 'Mes de estado de cuenta')}${dd('Periodo', ic('calendar') + ' Cualquier fecha')}<a class="btn sm" href="#/agentes/cobranza/docs">API Docs</a></div>
   <div class="banner"><span class="dot" style="background:var(--red)"></span>360 recibos vencidos · $2.4M + US$119 por cobrar<span class="x"><a href="#/recibos">Revisar →</a>${ic('x')}</span></div>
-  <div class="alert-red"><div class="hd"><span class="ic">!</span><div><b>Credenciales que requieren atención</b><small>10 credenciales de portal están fallando al iniciar sesión</small></div></div>
-    ${D.cred.map(([a, b]) => `<div class="row"><b>${a}</b><span style="color:var(--mut)">${b}</span><span class="b red">Falló la autenticación</span><span class="ag">COBRANZA</span></div>`).join('')}</div>
+
   <div class="grid" style="grid-template-columns:1.6fr 1fr 1fr;margin-bottom:6px">
     <div class="hero-dark"><div class="lbl" style="color:#a1a1aa">Prima neta · en el periodo</div><a class="meth" href="#" ${T}>Metodología</a><div class="v">$968.4M</div><div class="s">+ US$6,203 USD</div></div>
     <div class="card"><div class="lbl">Comisión · en el periodo</div><div style="font:500 22px var(--mono);margin-top:10px">$4M</div><div class="mono" style="font-size:10.5px;color:var(--mut)">+ US$179,248 USD</div></div>
